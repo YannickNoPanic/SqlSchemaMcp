@@ -17,7 +17,7 @@ Keep it easy to understand and easy to throw away or refactor later.
 - `ModelContextProtocol` NuGet package (latest prerelease)
 - `Microsoft.Data.SqlClient`
 - `Microsoft.Extensions.Hosting` for DI and config
-- Stdio transport
+- Stdio transport (default) — SSE available via `--sse` flag
 
 ## Project Structure
 ```
@@ -227,8 +227,9 @@ INDEXES
 
 ## MCP Registration
 
-### Claude Code CLI
-Add to `.claude/settings.json` in whatever project you're working in (e.g. Datalake2 root):
+### Stdio mode (default — recommended for most users)
+
+**Claude Code CLI** — add to `.claude/settings.json`:
 ```json
 {
   "mcpServers": {
@@ -240,14 +241,29 @@ Add to `.claude/settings.json` in whatever project you're working in (e.g. Datal
 }
 ```
 
-### Claude Desktop
-Add to `%APPDATA%\Claude\claude_desktop_config.json`:
+**Claude Desktop** — add to `%APPDATA%\Claude\claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
     "sql-schema": {
       "command": "dotnet",
       "args": ["run", "--project", "C:\\path\\to\\SqlSchemaMcp"]
+    }
+  }
+}
+```
+
+### SSE mode (powerusers — multiple Claude instances)
+
+Start the server: `dotnet run -- --sse`
+
+**Claude Code CLI** — add to `.claude/settings.json`:
+```json
+{
+  "mcpServers": {
+    "sql-schema": {
+      "type": "sse",
+      "url": "http://localhost:5101/sse"
     }
   }
 }
@@ -258,6 +274,7 @@ Add to `%APPDATA%\Claude\claude_desktop_config.json`:
 ## What NOT to build
 - No query execution or data preview
 - No schema modification
-- No HTTP / SSE endpoint — stdio only for now
+- No SSE authentication/security — local use only
+- No live schema refresh
 - No full proc body text diff
 - No VSA / mediator pattern — PoC, keep it simple
