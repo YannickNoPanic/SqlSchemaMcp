@@ -1,0 +1,10 @@
+appsettings.json
+constraints.json
+.mcp.json
+bin/
+obj/
+.vs/
+*.user
+planning/
+scripts/
+POC_Stored_Procedures_Overzicht.md

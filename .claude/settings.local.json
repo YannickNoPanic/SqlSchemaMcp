@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet build:*)",
+      "mcp__sql-schema__get_procedure_definition",
+      "mcp__sql-schema__list_tables",
+      "mcp__sql-schema__get_failing_jobs",
+      "Bash(powershell -Command \"Get-Process | Where-Object { $_.Name -like '*SqlSchema*' -or $_.MainWindowTitle -like '*SqlSchema*' } | Select-Object Id, Name, CPU | Format-Table\")",
+      "mcp__sql-schema__find_references",
+      "mcp__sql-schema__search_definitions",
+      "mcp__sql-schema__sample_table_data",
+      "mcp__sql-schema__list_agent_jobs",
+      "mcp__sql-schema__list_procedures",
+      "mcp__sql-schema__find_unused_tables",
+      "mcp__sql-schema__analyze_table_sizes",
+      "mcp__sql-schema__get_table_schema",
+      "mcp__sql-schema__get_view_definition",
+      "mcp__sql-schema__list_views",
+      "mcp__sql-schema__list_linked_servers",
+      "mcp__sql-schema__analyze_index_fragmentation",
+      "mcp__sql-schema__get_job_history",
+      "mcp__sql-schema__list_triggers",
+      "mcp__sql-schema__analyze_missing_indexes",
+      "mcp__sql-schema__analyze_missing_foreign_keys",
+      "mcp__sql-schema__analyze_duplicate_indexes"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "sql-schema"
+  ]
+}
