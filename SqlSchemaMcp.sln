@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlSchemaMcp", "SqlSchemaMcp.csproj", "{A396F2A5-748C-3982-0970-9032DE1C5E47}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A396F2A5-748C-3982-0970-9032DE1C5E47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A396F2A5-748C-3982-0970-9032DE1C5E47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A396F2A5-748C-3982-0970-9032DE1C5E47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A396F2A5-748C-3982-0970-9032DE1C5E47}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {18C14CD4-8B66-4677-A8CC-F73300548AA0}
+	EndGlobalSection
+EndGlobal
