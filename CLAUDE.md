@@ -236,12 +236,8 @@ INDEXES
     "sql-schema": {
       "type": "stdio",
       "command": "dotnet",
-      "args": [
-        "run",
-        "--project",
-        "C:/path/to/SqlSchemaMcp",
-        "--no-launch-profile"
-      ]
+      "args": ["run", "--no-launch-profile"],
+      "cwd": "C:/path/to/SqlSchemaMcp"
     }
   }
 }

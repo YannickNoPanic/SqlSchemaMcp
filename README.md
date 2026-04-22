@@ -11,9 +11,10 @@ and migration planning. No query execution, no data modification — schema and 
 1. Clone the repo
 2. Copy `appsettings.example.json` to `appsettings.json` and fill in your connection strings
 3. Add the server to `~/.claude.json` (see below)
-4. `dotnet run` inside the project directory — the server starts in stdio mode
+4. Claude Code starts the process automatically — or run `dotnet run` from the repo root manually
 
-Claude Code will start the process automatically when you open a project that has the MCP entry.
+The solution file (`SqlSchemaMcp.sln`) is at the repo root alongside the project, so `dotnet run`
+and `dotnet build` work from there without any `--project` flag.
 
 ---
 
@@ -88,16 +89,14 @@ Claude Code starts the process automatically for you.
     "sql-schema": {
       "type": "stdio",
       "command": "dotnet",
-      "args": [
-        "run",
-        "--project",
-        "C:/path/to/SqlSchemaMcp",
-        "--no-launch-profile"
-      ]
+      "args": ["run", "--no-launch-profile"],
+      "cwd": "C:/path/to/SqlSchemaMcp"
     }
   }
 }
 ```
+
+`cwd` points to the repo root (where `SqlSchemaMcp.sln` lives). No `--project` flag needed.
 
 ### HTTP (after starting `dotnet run -- --sse`)
 
