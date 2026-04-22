@@ -86,9 +86,24 @@ if (useSse)
         expires_in = 86400
     }));
 
+    // Health check — plain GET / without SSE headers (e.g. from health check hooks).
+    // MapMcp handles GET / for SSE streams; non-SSE GET returns 406, which blocks health checks.
+    app.Use(async (context, next) =>
+    {
+        if (context.Request.Method == "GET"
+            && context.Request.Path == "/"
+            && !context.Request.Headers.Accept.ToString().Contains("text/event-stream"))
+        {
+            context.Response.StatusCode = 200;
+            await context.Response.WriteAsJsonAsync(new { status = "ok", service = "SqlSchemaMcp" });
+            return;
+        }
+        await next(context);
+    });
+
     app.MapMcp();
 
-    Console.Error.WriteLine($"[SqlSchemaMcp] SSE mode — http://localhost:{port}/sse");
+    Console.Error.WriteLine($"[SqlSchemaMcp] HTTP mode — http://localhost:{port}/");
     await app.RunAsync();
 }
 else

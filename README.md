@@ -10,16 +10,18 @@ and migration planning. No query execution, no data modification — schema and 
 
 1. Clone the repo
 2. Copy `appsettings.example.json` to `appsettings.json` and fill in your connection strings
-3. Add the server to `.claude/settings.json` (see below)
+3. Add the server to `~/.claude.json` (see below)
 4. `dotnet run` inside the project directory — the server starts in stdio mode
 
 Claude Code will start the process automatically when you open a project that has the MCP entry.
 
 ---
 
-## SSE Mode (powerusers)
+## HTTP Mode (powerusers)
 
-Use SSE mode when you want to run the server once and connect multiple Claude instances to it.
+Use HTTP mode when you want to run the server once and connect multiple Claude instances to it.
+One shared process means no conflict on simultaneous `AddConstraint`/`RemoveConstraint` writes to
+`constraints.json` — safer than running stdio per session.
 
 Start the server manually:
 
@@ -27,7 +29,13 @@ Start the server manually:
 dotnet run -- --sse
 ```
 
-The server starts on `http://localhost:5101/sse` (port configurable via `Mcp:Port`).
+The `--sse` flag is named for historical reasons; the actual transport is streamable HTTP.
+The server starts on `http://localhost:5101/` (port configurable via `Mcp:Port`).
+
+**Stdio and multiple sessions:** stdio spawns a separate subprocess per Claude session with its
+own SQL connection pool — no transport conflict. The only shared state is `constraints.json` on
+disk: two sessions writing simultaneously can overwrite each other (no file lock). For read-only
+work this is not an issue; for constraint writes prefer HTTP mode.
 
 ---
 
@@ -53,41 +61,52 @@ The server starts on `http://localhost:5101/sse` (port configurable via `Mcp:Por
 
 ### Environment variable overrides
 
+These env vars are read by `Program.cs` with prefix `SQLMCP_` and override any value in
+`appsettings.json`. They work in both stdio and HTTP mode.
+
 | Variable | Description |
 |----------|-------------|
 | `SQLMCP_SqlServer__Databases__poc` | Override the `poc` connection string |
 | `SQLMCP_SqlServer__Databases__azure` | Override the `azure` connection string |
-| `SQLMCP_Mcp__Port` | Override the SSE port (SSE mode only) |
+| `SQLMCP_Mcp__Port` | Override the HTTP port (HTTP mode only) |
 
 The `__` separator maps to nested JSON keys. Add any database name you configure in appsettings.
 
 ---
 
-## Claude Code settings.json
+## Claude Code MCP Registration
+
+Add entries to `~/.claude.json` (your user-wide Claude Code config).
 
 ### Stdio (default)
 
-Add to `.claude/settings.json` in the project where you want schema access:
+Claude Code starts the process automatically for you.
 
 ```json
 {
   "mcpServers": {
     "sql-schema": {
+      "type": "stdio",
       "command": "dotnet",
-      "args": ["run", "--project", "C:\\path\\to\\SqlSchemaMcp"]
+      "args": [
+        "run",
+        "--project",
+        "C:/path/to/SqlSchemaMcp",
+        "--no-launch-profile"
+      ]
     }
   }
 }
 ```
 
-### SSE (after starting `dotnet run -- --sse`)
+### HTTP (after starting `dotnet run -- --sse`)
 
 ```json
 {
   "mcpServers": {
     "sql-schema": {
-      "type": "sse",
-      "url": "http://localhost:5101/sse"
+      "type": "http",
+      "url": "http://localhost:5101/"
     }
   }
 }
@@ -207,6 +226,6 @@ stderr — stdout is reserved for MCP JSON-RPC.
 The database name passed to a tool does not match any key in `SqlServer.Databases`. Check
 `appsettings.json` or the active env var overrides.
 
-**Port already in use (SSE mode)**
+**Port already in use (HTTP mode)**
 Change the port via `appsettings.json` (`Mcp:Port`) or env var `SQLMCP_Mcp__Port` and update the
-`url` in your `settings.json` accordingly.
+`url` in your `.claude.json` accordingly.

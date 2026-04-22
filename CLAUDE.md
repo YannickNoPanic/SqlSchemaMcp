@@ -229,13 +229,19 @@ INDEXES
 
 ### Stdio mode (default — recommended for most users)
 
-**Claude Code CLI** — add to `.claude/settings.json`:
+**Claude Code CLI** — add to `~/.claude.json`:
 ```json
 {
   "mcpServers": {
     "sql-schema": {
+      "type": "stdio",
       "command": "dotnet",
-      "args": ["run", "--project", "C:\\path\\to\\SqlSchemaMcp"]
+      "args": [
+        "run",
+        "--project",
+        "C:/path/to/SqlSchemaMcp",
+        "--no-launch-profile"
+      ]
     }
   }
 }
@@ -246,6 +252,7 @@ INDEXES
 {
   "mcpServers": {
     "sql-schema": {
+      "type": "stdio",
       "command": "dotnet",
       "args": ["run", "--project", "C:\\path\\to\\SqlSchemaMcp"]
     }
@@ -253,17 +260,19 @@ INDEXES
 }
 ```
 
-### SSE mode (powerusers — multiple Claude instances)
+### HTTP mode (powerusers — multiple Claude instances)
 
 Start the server: `dotnet run -- --sse`
 
-**Claude Code CLI** — add to `.claude/settings.json`:
+The `--sse` flag is named for historical reasons; the actual transport is streamable HTTP.
+
+**Claude Code CLI** — add to `~/.claude.json`:
 ```json
 {
   "mcpServers": {
     "sql-schema": {
-      "type": "sse",
-      "url": "http://localhost:5101/sse"
+      "type": "http",
+      "url": "http://localhost:5101/"
     }
   }
 }
