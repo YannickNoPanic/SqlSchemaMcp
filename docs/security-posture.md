@@ -142,6 +142,47 @@ for real authentication and is not intended as a multi-tenant or public transpor
 
 ---
 
+## Shared HTTP-mode deployment
+
+Running one Docker instance centrally so a team shares it (see the README's "Running HTTP
+mode with Docker" section) changes the trust model from "only I can reach this process" to
+"everyone on the network segment can reach this process." Two things follow directly from
+that, and neither is solved by application code today:
+
+- **There is still no application-level authentication.** The OAuth endpoints in
+  `Program.cs` (`/.well-known/oauth-protected-resource`, `/.well-known/oauth-authorization-server`)
+  exist only to satisfy the MCP client's discovery handshake — they accept any token and do
+  not gate access to any tool. Access control for a shared instance is **network-level
+  only**: a VPN or firewall rule restricting which machines can reach the port. Do not expose
+  the port to the public internet, and do not expose it to a network segment broader than
+  your team.
+- **The audit log cannot attribute a call to a person.** Because there is no per-user
+  authentication, every call recorded by the audit trail (see above) looks the same
+  regardless of which teammate's Claude Code made it — the log can tell you that a call came
+  from the shared instance, not who was driving it.
+
+### Backlog (not yet built)
+
+- **Per-user authentication for HTTP mode.** Static API keys per user/team would be a
+  reasonable first step; full Entra ID / Azure AD OAuth would additionally give SSO. Either
+  would let the audit log attribute calls to a person and let access be revoked per-user
+  without redeploying the whole instance.
+- **Azure Key Vault + Managed Identity for server secrets.** Connection strings and other
+  secrets currently arrive as plain `SQLMCP_`-prefixed environment variables via `.env` and
+  docker compose. That's adequate for a small team on a controlled server, but it isn't
+  centrally rotatable or auditable the way a secret store is.
+- **Fix the hardcoded `localhost` in the OAuth discovery endpoints.** `Program.cs` builds the
+  `resource`, `issuer`, `authorization_endpoint`, `token_endpoint`, and `registration_endpoint`
+  values in `/.well-known/oauth-protected-resource` and `/.well-known/oauth-authorization-server`
+  from a literal `http://localhost:{port}`, regardless of the actual configured
+  `Mcp:BindAddress` or the host a remote client actually used to reach the server. A client
+  connecting to the shared instance over the VPN receives discovery metadata pointing back at
+  "localhost" rather than the real host. This is a real, present gap, not a hypothetical one —
+  and worth fixing alongside the per-user-auth work above, since implementing real
+  authentication will likely require reworking these same endpoints anyway.
+
+---
+
 ## Prompt-injection blast radius
 
 If an agent using this server is manipulated (via prompt injection, a malicious tool result,

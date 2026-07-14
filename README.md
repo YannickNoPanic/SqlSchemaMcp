@@ -65,6 +65,41 @@ Point Claude Code at it the same way as any other HTTP-mode server (see below), 
 the port to a network you control (VPN/firewall) — there is no application-level
 authentication on this transport yet.
 
+**Running this as a shared team instance instead of your own local container is a deliberate
+trust boundary change** — read **[docs/security-posture.md](docs/security-posture.md)**,
+specifically the "Shared HTTP-mode deployment" section, before pointing anyone else's Claude
+Code at it.
+
+#### Audit trail (persisted across restarts)
+
+The audit log is written to `/data/audit-log.jsonl` inside the container, which
+`docker-compose.yml` maps to the named volume `audit-data` — it survives container restarts
+and `docker compose up -d --build` rebuilds. Inspect it without stopping the server:
+
+```bash
+docker compose exec sql-schema-mcp cat /data/audit-log.jsonl
+```
+
+#### Point a teammate's Claude Code at the shared instance
+
+```json
+{
+  "mcpServers": {
+    "sql-schema": {
+      "type": "http",
+      "url": "http://<server-on-your-vpn>:5101/"
+    }
+  }
+}
+```
+
+#### Operating it
+
+- **Logs:** `docker compose logs -f sql-schema-mcp`
+- **Update:** `git pull && docker compose up -d --build` (brief downtime while the container rebuilds)
+- **Secrets rotation:** edit `.env` on the server, then `docker compose up -d` to recreate the
+  container with the new environment — no rebuild needed unless the image itself changed.
+
 ---
 
 ## Configuration
