@@ -513,8 +513,8 @@ public sealed class DiagnosticsQueries(IOptions<SqlServerOptions> options) : Sql
         if (top < 1) top = 1;
         if (top > 100) top = 100;
 
-        string sql = $"""
-            SELECT TOP ({top})
+        const string sql = """
+            SELECT TOP (@top)
                 qs.execution_count,
                 ROUND(qs.total_worker_time / 1000.0, 0) AS TotalCPUms,
                 ROUND(qs.total_worker_time / qs.execution_count / 1000.0, 1) AS AvgCPUms,
@@ -536,6 +536,7 @@ public sealed class DiagnosticsQueries(IOptions<SqlServerOptions> options) : Sql
             await using var conn = new SqlConnection(connectionString);
             await conn.OpenAsync(cancellationToken);
             await using var cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@top", top);
             await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
 
             var sb = new StringBuilder();
