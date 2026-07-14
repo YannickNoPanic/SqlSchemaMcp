@@ -1,7 +1,11 @@
+using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SqlSchemaMcp.Configuration;
 using SqlSchemaMcp.Data;
+using SqlSchemaMcp.Security;
 using SqlSchemaMcp.Tools;
 
 bool useSse = args.Contains("--sse");
@@ -33,6 +37,12 @@ if (useSse)
         .WithTools<QueryTools>();
 
     var app = builder.Build();
+
+    if (!await RunStartupGateAsync(app.Services, CancellationToken.None))
+    {
+        Console.Error.WriteLine("[SqlSchemaMcp] Startup aborted: a configured login is not read-only.");
+        Environment.Exit(1);
+    }
 
     // Minimal OAuth server so Claude Code can complete its auth flow for local MCP connections.
     // No tokens are validated — these endpoints exist only to satisfy the OAuth discovery dance.
@@ -134,12 +144,20 @@ else
 
     Console.Error.WriteLine("[SqlSchemaMcp] Stdio mode gestart");
     var host = builder.Build();
+
+    if (!await RunStartupGateAsync(host.Services, CancellationToken.None))
+    {
+        Console.Error.WriteLine("[SqlSchemaMcp] Startup aborted: a configured login is not read-only.");
+        Environment.Exit(1);
+    }
+
     await host.RunAsync();
 }
 
 static void RegisterServices(IConfiguration configuration, IServiceCollection services)
 {
     services.Configure<SqlServerOptions>(configuration.GetSection("SqlServer"));
+    services.Configure<SecurityOptions>(configuration.GetSection("Security"));
 
     services.AddSingleton<SchemaQueries>();
     services.AddSingleton<AnalysisQueries>();
@@ -149,4 +167,25 @@ static void RegisterServices(IConfiguration configuration, IServiceCollection se
     services.AddSingleton<DataQueries>();
     services.AddSingleton<SecurityQueries>();
     services.AddSingleton<QueryQueries>();
+    services.AddSingleton<IPermissionProbe, SqlServerPermissionProbe>();
+}
+
+static async Task<bool> RunStartupGateAsync(IServiceProvider services, CancellationToken ct)
+{
+    var options = services.GetRequiredService<IOptions<SqlServerOptions>>().Value;
+    var security = services.GetRequiredService<IOptions<SecurityOptions>>().Value;
+    var probe = services.GetRequiredService<IPermissionProbe>();
+
+    var results = new List<LoginPermissionResult>();
+    foreach (var (name, connectionString) in options.Databases)
+        results.Add(await probe.ProbeAsync(name, connectionString, ct));
+
+    var decision = ReadOnlyStartupGate.Evaluate(results, security);
+
+    foreach (var warning in decision.Warnings)
+        Console.Error.WriteLine($"[SqlSchemaMcp] WARN: {warning}");
+    foreach (var error in decision.Errors)
+        Console.Error.WriteLine($"[SqlSchemaMcp] CRITICAL: {error}");
+
+    return decision.ShouldStart;
 }
