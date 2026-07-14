@@ -1,8 +1,15 @@
 # SqlSchemaMcp
 
-A read-only MCP server that exposes SQL Server schema information to Claude. Supports cross-database
-analysis, naming convention review, missing constraint detection, complexity analysis, pipeline health,
-and migration planning. No query execution, no data modification — schema and metadata only.
+A read-only MCP server for SQL Server. It exposes full schema and metadata, and supports
+read-only data access for debugging: a validated single-SELECT `execute_query` tool plus
+bounded row sampling and column-distribution tools. It never modifies data or schema.
+
+Read-only is enforced on two levels: a startup gate that refuses to run against a login
+with write permissions, and a parser-based allowlist that permits only SELECT/CTE queries.
+See docs/security-posture.md before installing.
+
+Also supports cross-database analysis, naming convention review, missing constraint detection,
+complexity analysis, pipeline health, and migration planning.
 
 ---
 
@@ -90,8 +97,34 @@ These env vars are read by `Program.cs` with prefix `SQLMCP_` and override any v
 | `SQLMCP_SqlServer__Databases__poc` | Override the `poc` connection string |
 | `SQLMCP_SqlServer__Databases__azure` | Override the `azure` connection string |
 | `SQLMCP_Mcp__Port` | Override the HTTP port (HTTP mode only) |
+| `SQLMCP_Security__VerifyLoginsAtStartup` | Override `Security:VerifyLoginsAtStartup` |
+| `SQLMCP_Security__AllowWritableLogin` | Override `Security:AllowWritableLogin` |
+| `SQLMCP_Audit__Enabled` | Override `Audit:Enabled` |
+| `SQLMCP_Audit__Path` | Override `Audit:Path` |
 
 The `__` separator maps to nested JSON keys. Add any database name you configure in appsettings.
+
+---
+
+## Security and Audit
+
+This server is read-only by design, enforced at two levels rather than by convention alone:
+
+- **Startup gate** — on launch, every configured database login is probed for write
+  permissions. If any login can write, the server refuses to start (`Security:VerifyLoginsAtStartup`,
+  default `true`; escape hatch `Security:AllowWritableLogin`, default `false`).
+- **Statement allowlist** — `execute_query` parses every statement with the T-SQL parser and
+  permits only a single SELECT or CTE. Writes, DDL, `EXEC`, `OPENQUERY`/`OPENROWSET`/`OPENDATASOURCE`,
+  `SELECT ... INTO`, and multi-statement batches are all rejected.
+
+Row-level data access is real, not simulated: `execute_query`, `SampleTableData`,
+`AnalyzeColumnDistribution`, and `FindDuplicateRows` return actual row values (bounded to
+500 rows per call, 30-second timeout). Every tool invocation is recorded to a JSON-lines audit
+log (`audit-log.jsonl` by default, configurable via `Audit:Path`; disable with `Audit:Enabled=false`).
+
+See **[docs/security-posture.md](docs/security-posture.md)** for the required database login
+setup, what the audit log records, and the prompt-injection blast radius — read it before
+pointing this server at a database you care about.
 
 ---
 

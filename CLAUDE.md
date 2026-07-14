@@ -5,7 +5,10 @@ A standalone read-only MCP server that exposes SQL Server schema information acr
 databases (poc and azure) to Claude. Used for cross-database analysis, naming convention review,
 missing constraint detection, complexity analysis, and migration planning.
 
-No query execution. No data access. Schema and metadata only.
+Read-only. Full schema and metadata, plus deliberately-scoped read-only data access
+(single-SELECT execute_query, row sampling, column stats) for debugging. No writes, no DDL,
+no schema modification. Read-only is enforced by a startup permission gate and a SELECT-only
+allowlist validator — not by convention alone.
 
 ## Architecture
 Simple and clean — this is a PoC. No vertical slice overhead, no CQRS, no mediator.
@@ -277,8 +280,7 @@ The `--sse` flag is named for historical reasons; the actual transport is stream
 ---
 
 ## What NOT to build
-- No query execution or data preview
-- No schema modification
+- No write or DDL execution of any kind; no schema modification
 - No SSE authentication/security — local use only
 - No live schema refresh
 - No full proc body text diff

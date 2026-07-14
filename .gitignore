@@ -1,5 +1,6 @@
 appsettings.json
 constraints.json
+audit-log*.jsonl
 .mcp.json
 .env
 bin/
