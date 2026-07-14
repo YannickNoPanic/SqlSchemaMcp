@@ -38,6 +38,26 @@ own SQL connection pool — no transport conflict. The only shared state is `con
 disk: two sessions writing simultaneously can overwrite each other (no file lock). For read-only
 work this is not an issue; for constraint writes prefer HTTP mode.
 
+### Running HTTP mode with Docker
+
+```bash
+cp .env.example .env    # fill in real connection strings, and MCP_PORT if 5101 is taken
+docker compose up -d --build
+```
+
+The port is fully configurable via `MCP_PORT` in `.env` — it drives both the published host
+port and the server's internal `Mcp:Port`, so the two never drift apart. Confirm it's up:
+
+```
+curl http://localhost:5101/
+{"status":"ok","service":"SqlSchemaMcp"}
+```
+
+Point Claude Code at it the same way as any other HTTP-mode server (see below), using
+`http://<host>:<MCP_PORT>/`. This binds the container to `0.0.0.0` internally; only publish
+the port to a network you control (VPN/firewall) — there is no application-level
+authentication on this transport yet.
+
 ---
 
 ## Configuration

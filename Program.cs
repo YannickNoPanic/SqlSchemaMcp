@@ -16,7 +16,8 @@ if (useSse)
     RegisterServices(builder.Configuration, builder.Services);
 
     var port = builder.Configuration.GetValue<int>("Mcp:Port", 5101);
-    builder.WebHost.UseUrls($"http://localhost:{port}");
+    var bindAddress = builder.Configuration.GetValue<string>("Mcp:BindAddress", "localhost");
+    builder.WebHost.UseUrls($"http://{bindAddress}:{port}");
 
     builder.Services
         .AddMcpServer()
@@ -28,7 +29,8 @@ if (useSse)
         .WithTools<ConstraintTools>()
         .WithTools<DiagnosticsTools>()
         .WithTools<DataTools>()
-        .WithTools<SecurityTools>();
+        .WithTools<SecurityTools>()
+        .WithTools<QueryTools>();
 
     var app = builder.Build();
 
@@ -103,7 +105,7 @@ if (useSse)
 
     app.MapMcp();
 
-    Console.Error.WriteLine($"[SqlSchemaMcp] HTTP mode — http://localhost:{port}/");
+    Console.Error.WriteLine($"[SqlSchemaMcp] HTTP mode — http://{bindAddress}:{port}/");
     await app.RunAsync();
 }
 else
@@ -127,7 +129,8 @@ else
         .WithTools<ConstraintTools>()
         .WithTools<DiagnosticsTools>()
         .WithTools<DataTools>()
-        .WithTools<SecurityTools>();
+        .WithTools<SecurityTools>()
+        .WithTools<QueryTools>();
 
     Console.Error.WriteLine("[SqlSchemaMcp] Stdio mode gestart");
     var host = builder.Build();
@@ -145,4 +148,5 @@ static void RegisterServices(IConfiguration configuration, IServiceCollection se
     services.AddSingleton<DiagnosticsQueries>();
     services.AddSingleton<DataQueries>();
     services.AddSingleton<SecurityQueries>();
+    services.AddSingleton<QueryQueries>();
 }

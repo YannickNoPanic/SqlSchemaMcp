@@ -1,6 +1,7 @@
 appsettings.json
 constraints.json
 .mcp.json
+.env
 bin/
 obj/
 .vs/

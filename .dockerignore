@@ -1,0 +1,11 @@
+bin/
+obj/
+.vs/
+appsettings.json
+constraints.json
+audit-log.jsonl
+docs/
+.git/
+.gitignore
+.env
+*.md
