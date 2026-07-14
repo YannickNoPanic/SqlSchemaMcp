@@ -5,6 +5,7 @@ appsettings.json
 constraints.json
 audit-log.jsonl
 docs/
+SqlSchemaMcp.Tests/
 .git/
 .gitignore
 .env

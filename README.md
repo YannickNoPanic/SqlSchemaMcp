@@ -74,7 +74,8 @@ authentication on this transport yet.
 ```json
 {
   "Mcp": {
-    "Port": 5101
+    "Port": 5101,
+    "BindAddress": "localhost"
   },
   "SqlServer": {
     "Databases": {
@@ -97,6 +98,7 @@ These env vars are read by `Program.cs` with prefix `SQLMCP_` and override any v
 | `SQLMCP_SqlServer__Databases__poc` | Override the `poc` connection string |
 | `SQLMCP_SqlServer__Databases__azure` | Override the `azure` connection string |
 | `SQLMCP_Mcp__Port` | Override the HTTP port (HTTP mode only) |
+| `SQLMCP_Mcp__BindAddress` | Override the HTTP bind address (use `0.0.0.0` inside a container) |
 | `SQLMCP_Security__VerifyLoginsAtStartup` | Override `Security:VerifyLoginsAtStartup` |
 | `SQLMCP_Security__AllowWritableLogin` | Override `Security:AllowWritableLogin` |
 | `SQLMCP_Audit__Enabled` | Override `Audit:Enabled` |
