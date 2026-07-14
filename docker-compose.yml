@@ -1,0 +1,22 @@
+services:
+  sql-schema-mcp:
+    build: .
+    ports:
+      - "${MCP_PORT:-5101}:${MCP_PORT:-5101}"
+    environment:
+      SQLMCP_Mcp__Port: ${MCP_PORT:-5101}
+      SQLMCP_Mcp__BindAddress: 0.0.0.0
+      SQLMCP_SqlServer__Databases__poc: ${SQLMCP_POC_CONNECTION_STRING}
+      SQLMCP_SqlServer__Databases__azure: ${SQLMCP_AZURE_CONNECTION_STRING}
+    restart: unless-stopped
+    networks:
+      - mcp_default1
+
+networks:
+  mcp_default1:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.1.0/24
+          gateway: 172.28.1.1
