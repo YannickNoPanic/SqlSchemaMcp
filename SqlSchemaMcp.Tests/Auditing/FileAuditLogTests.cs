@@ -30,6 +30,19 @@ public sealed class FileAuditLogTests : IDisposable
     }
 
     [Fact]
+    public async Task Invoke_BodyReturnsErrorString_RecordsFailureWithoutThrowing()
+    {
+        var sut = new FileAuditLog(Options.Create(new AuditOptions { Enabled = true, Path = _path }));
+
+        var result = await sut.Invoke("ExecuteQuery", "poc", "sql=bad", () => Task.FromResult("ERROR: Unknown database 'poc'."));
+
+        result.Should().Be("ERROR: Unknown database 'poc'.");
+        var line = (await File.ReadAllLinesAsync(_path))[0];
+        var entry = JsonSerializer.Deserialize<AuditEntry>(line, JsonSerializerOptions.Web);
+        entry!.Success.Should().BeFalse();
+    }
+
+    [Fact]
     public async Task Invoke_BodyThrows_RecordsFailureAndRethrows()
     {
         var sut = new FileAuditLog(Options.Create(new AuditOptions { Enabled = true, Path = _path }));
