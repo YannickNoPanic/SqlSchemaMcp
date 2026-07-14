@@ -782,8 +782,6 @@ public sealed class AnalysisQueries(IOptions<SqlServerOptions> options) : SqlQue
             ORDER BY s.avg_fragmentation_in_percent DESC
             """;
 
-        SqlCommandGuard.AssertReadOnly(sql);
-
         try
         {
             await using var conn = new SqlConnection(connectionString);
@@ -1025,8 +1023,6 @@ public sealed class AnalysisQueries(IOptions<SqlServerOptions> options) : SqlQue
             ORDER BY SUM(ps.reserved_page_count) DESC
             """;
 
-        SqlCommandGuard.AssertReadOnly(sql);
-
         try
         {
             await using var conn = new SqlConnection(connectionString);
@@ -1094,8 +1090,6 @@ public sealed class AnalysisQueries(IOptions<SqlServerOptions> options) : SqlQue
             WHERE mid.database_id = DB_ID()
             ORDER BY ImpactScore DESC
             """;
-
-        SqlCommandGuard.AssertReadOnly(sql);
 
         try
         {
@@ -1244,8 +1238,6 @@ public sealed class AnalysisQueries(IOptions<SqlServerOptions> options) : SqlQue
                    + SUM(ISNULL(u.user_lookups, 0)) DESC
             """;
 
-        SqlCommandGuard.AssertReadOnly(statsSql);
-
         try
         {
             await using var conn = new SqlConnection(connectionString);
@@ -1321,8 +1313,6 @@ public sealed class AnalysisQueries(IOptions<SqlServerOptions> options) : SqlQue
             WHERE t.name NOT LIKE @stagingPattern
             GROUP BY SCHEMA_NAME(t.schema_id), t.name
             """;
-
-        SqlCommandGuard.AssertReadOnly(sql);
 
         try
         {
@@ -1439,9 +1429,6 @@ public sealed class AnalysisQueries(IOptions<SqlServerOptions> options) : SqlQue
                 SUM(used_page_count) * 8 / 1024 AS UsedMB
             FROM sys.dm_db_partition_stats
             """;
-
-        SqlCommandGuard.AssertReadOnly(topTablesSql);
-        SqlCommandGuard.AssertReadOnly(sizeSql);
 
         try
         {

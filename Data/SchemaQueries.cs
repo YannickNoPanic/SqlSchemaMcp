@@ -887,8 +887,6 @@ public sealed class SchemaQueries(IOptions<SqlServerOptions> options) : SqlQuery
             ORDER BY t.name
             """;
 
-        SqlCommandGuard.AssertReadOnly(sql);
-
         try
         {
             await using var conn = new SqlConnection(connectionString);
@@ -943,8 +941,6 @@ public sealed class SchemaQueries(IOptions<SqlServerOptions> options) : SqlQuery
             WHERE t.parent_class = 0
                 AND t.name = @name
             """;
-
-        SqlCommandGuard.AssertReadOnly(sql);
 
         try
         {

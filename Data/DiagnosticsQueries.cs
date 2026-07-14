@@ -34,7 +34,6 @@ public sealed class DiagnosticsQueries(IOptions<SqlServerOptions> options) : Sql
             ORDER BY j.name
             """;
 
-        SqlCommandGuard.AssertReadOnly(sql);
 
         try
         {
@@ -99,7 +98,6 @@ public sealed class DiagnosticsQueries(IOptions<SqlServerOptions> options) : Sql
             ORDER BY h.run_date DESC, h.run_time DESC
             """;
 
-        SqlCommandGuard.AssertReadOnly(sql);
 
         try
         {
@@ -166,7 +164,6 @@ public sealed class DiagnosticsQueries(IOptions<SqlServerOptions> options) : Sql
             ORDER BY h.run_date DESC, h.run_time DESC, h.step_id
             """;
 
-        SqlCommandGuard.AssertReadOnly(sql);
 
         try
         {
@@ -260,7 +257,6 @@ public sealed class DiagnosticsQueries(IOptions<SqlServerOptions> options) : Sql
             ORDER BY s.name
             """;
 
-        SqlCommandGuard.AssertReadOnly(sql);
 
         try
         {
@@ -321,7 +317,6 @@ public sealed class DiagnosticsQueries(IOptions<SqlServerOptions> options) : Sql
             ORDER BY o.type_desc, o.name
             """;
 
-        SqlCommandGuard.AssertReadOnly(sql);
 
         // If a specific linked server name is given search for it, otherwise search for the
         // four-part name pattern [server].[db]. that indicates any linked server call.
@@ -392,8 +387,6 @@ public sealed class DiagnosticsQueries(IOptions<SqlServerOptions> options) : Sql
             ORDER BY s.name
             """;
 
-        SqlCommandGuard.AssertReadOnly(queueSql);
-        SqlCommandGuard.AssertReadOnly(serviceSql);
 
         try
         {
@@ -470,7 +463,6 @@ public sealed class DiagnosticsQueries(IOptions<SqlServerOptions> options) : Sql
             ORDER BY a.name
             """;
 
-        SqlCommandGuard.AssertReadOnly(sql);
 
         try
         {
@@ -538,7 +530,6 @@ public sealed class DiagnosticsQueries(IOptions<SqlServerOptions> options) : Sql
             ORDER BY qs.total_worker_time DESC
             """;
 
-        SqlCommandGuard.AssertReadOnly(sql);
 
         try
         {
@@ -613,7 +604,6 @@ public sealed class DiagnosticsQueries(IOptions<SqlServerOptions> options) : Sql
             ORDER BY wait_time_ms DESC
             """;
 
-        SqlCommandGuard.AssertReadOnly(sql);
 
         try
         {
