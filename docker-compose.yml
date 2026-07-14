@@ -8,6 +8,12 @@ services:
       SQLMCP_Mcp__BindAddress: 0.0.0.0
       SQLMCP_SqlServer__Databases__poc: ${SQLMCP_POC_CONNECTION_STRING}
       SQLMCP_SqlServer__Databases__azure: ${SQLMCP_AZURE_CONNECTION_STRING}
+      SQLMCP_Security__VerifyLoginsAtStartup: "true"
+      SQLMCP_Security__AllowWritableLogin: "false"
+      SQLMCP_Audit__Enabled: "true"
+      SQLMCP_Audit__Path: /data/audit-log.jsonl
+    volumes:
+      - audit-data:/data
     restart: unless-stopped
     networks:
       - mcp_default1
@@ -20,3 +26,6 @@ networks:
       config:
         - subnet: 172.28.1.0/24
           gateway: 172.28.1.1
+
+volumes:
+  audit-data:
