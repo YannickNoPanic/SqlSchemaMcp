@@ -81,4 +81,34 @@ public sealed class ReadOnlyStartupGateTests
 
         decision.ShouldStart.Should().BeTrue();
     }
+
+    [Fact]
+    public void Evaluate_MixedDatabases_OneWritableOneReadOnly_RefusesToStart()
+    {
+        var probes = new List<LoginPermissionResult>
+        {
+            new("poc", Reachable: true, CanWrite: false, GrantedWrites: []),
+            new("azure", Reachable: true, CanWrite: true, GrantedWrites: ["db_owner"]),
+        };
+
+        var decision = ReadOnlyStartupGate.Evaluate(probes, Strict);
+
+        decision.ShouldStart.Should().BeFalse();
+        decision.Errors.Should().ContainSingle().Which.Should().Contain("azure").And.Contain("db_owner");
+    }
+
+    [Fact]
+    public void Evaluate_MultipleWritableDatabases_AccumulatesAllErrors()
+    {
+        var probes = new List<LoginPermissionResult>
+        {
+            new("poc", Reachable: true, CanWrite: true, GrantedWrites: ["db_datawriter"]),
+            new("azure", Reachable: true, CanWrite: true, GrantedWrites: ["db_owner"]),
+        };
+
+        var decision = ReadOnlyStartupGate.Evaluate(probes, Strict);
+
+        decision.ShouldStart.Should().BeFalse();
+        decision.Errors.Should().HaveCount(2);
+    }
 }
