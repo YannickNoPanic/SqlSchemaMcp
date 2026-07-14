@@ -1,12 +1,14 @@
 using System.Globalization;
 using System.Text;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SqlSchemaMcp.Configuration;
 
 namespace SqlSchemaMcp.Data;
 
-public sealed class PipelineQueries(IOptions<SqlServerOptions> options) : SqlQueryBase(options)
+public sealed class PipelineQueries(IOptions<SqlServerOptions> options, ILogger<PipelineQueries> logger)
+    : SqlQueryBase(options, logger)
 {
     public async Task<string> ListDataFeeds(
         string database,
@@ -47,7 +49,7 @@ public sealed class PipelineQueries(IOptions<SqlServerOptions> options) : SqlQue
         }
         catch (Exception ex)
         {
-            return $"ERROR: {ex.Message}";
+            return SafeError(ex);
         }
     }
 
@@ -118,7 +120,7 @@ public sealed class PipelineQueries(IOptions<SqlServerOptions> options) : SqlQue
         }
         catch (Exception ex)
         {
-            return $"ERROR: {ex.Message}";
+            return SafeError(ex);
         }
     }
 
@@ -242,7 +244,7 @@ public sealed class PipelineQueries(IOptions<SqlServerOptions> options) : SqlQue
         }
         catch (Exception ex)
         {
-            return $"ERROR: {ex.Message}";
+            return SafeError(ex);
         }
     }
 

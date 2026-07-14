@@ -1,12 +1,14 @@
 using System.Globalization;
 using System.Text;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SqlSchemaMcp.Configuration;
 
 namespace SqlSchemaMcp.Data;
 
-public sealed class DiagnosticsQueries(IOptions<SqlServerOptions> options) : SqlQueryBase(options)
+public sealed class DiagnosticsQueries(IOptions<SqlServerOptions> options, ILogger<DiagnosticsQueries> logger)
+    : SqlQueryBase(options, logger)
 {
     public async Task<string> ListAgentJobs(
         string database,
@@ -72,7 +74,7 @@ public sealed class DiagnosticsQueries(IOptions<SqlServerOptions> options) : Sql
         }
         catch (Exception ex)
         {
-            return $"ERROR: {ex.Message}";
+            return SafeError(ex);
         }
     }
 
@@ -136,7 +138,7 @@ public sealed class DiagnosticsQueries(IOptions<SqlServerOptions> options) : Sql
         }
         catch (Exception ex)
         {
-            return $"ERROR: {ex.Message}";
+            return SafeError(ex);
         }
     }
 
@@ -208,7 +210,7 @@ public sealed class DiagnosticsQueries(IOptions<SqlServerOptions> options) : Sql
         }
         catch (Exception ex)
         {
-            return $"ERROR: {ex.Message}";
+            return SafeError(ex);
         }
     }
 
@@ -294,7 +296,7 @@ public sealed class DiagnosticsQueries(IOptions<SqlServerOptions> options) : Sql
         }
         catch (Exception ex)
         {
-            return $"ERROR: {ex.Message}";
+            return SafeError(ex);
         }
     }
 
@@ -361,7 +363,7 @@ public sealed class DiagnosticsQueries(IOptions<SqlServerOptions> options) : Sql
         }
         catch (Exception ex)
         {
-            return $"ERROR: {ex.Message}";
+            return SafeError(ex);
         }
     }
 
@@ -440,7 +442,7 @@ public sealed class DiagnosticsQueries(IOptions<SqlServerOptions> options) : Sql
         }
         catch (Exception ex)
         {
-            return $"ERROR: {ex.Message}";
+            return SafeError(ex);
         }
     }
 
@@ -498,7 +500,7 @@ public sealed class DiagnosticsQueries(IOptions<SqlServerOptions> options) : Sql
         }
         catch (Exception ex)
         {
-            return $"ERROR: {ex.Message}";
+            return SafeError(ex);
         }
     }
 
@@ -570,7 +572,7 @@ public sealed class DiagnosticsQueries(IOptions<SqlServerOptions> options) : Sql
         }
         catch (Exception ex)
         {
-            return $"ERROR: {ex.Message}";
+            return SafeError(ex);
         }
     }
 
@@ -641,7 +643,7 @@ public sealed class DiagnosticsQueries(IOptions<SqlServerOptions> options) : Sql
         }
         catch (Exception ex)
         {
-            return $"ERROR: {ex.Message}";
+            return SafeError(ex);
         }
     }
 }

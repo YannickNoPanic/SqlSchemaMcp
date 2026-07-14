@@ -1,12 +1,14 @@
 using System.Globalization;
 using System.Text;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SqlSchemaMcp.Configuration;
 
 namespace SqlSchemaMcp.Data;
 
-public sealed class QueryQueries(IOptions<SqlServerOptions> options) : SqlQueryBase(options)
+public sealed class QueryQueries(IOptions<SqlServerOptions> options, ILogger<QueryQueries> logger)
+    : SqlQueryBase(options, logger)
 {
     private const int MaxRows = 500;
     private const int CommandTimeoutSeconds = 30;
@@ -91,7 +93,7 @@ public sealed class QueryQueries(IOptions<SqlServerOptions> options) : SqlQueryB
         }
         catch (Exception ex)
         {
-            return $"ERROR: {ex.Message}";
+            return SafeError(ex);
         }
     }
 }

@@ -1,12 +1,14 @@
 using System.Globalization;
 using System.Text;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SqlSchemaMcp.Configuration;
 
 namespace SqlSchemaMcp.Data;
 
-public sealed class CompareQueries(IOptions<SqlServerOptions> options) : SqlQueryBase(options)
+public sealed class CompareQueries(IOptions<SqlServerOptions> options, ILogger<CompareQueries> logger)
+    : SqlQueryBase(options, logger)
 {
     public async Task<HashSet<string>> GetTableNames(
         string database,

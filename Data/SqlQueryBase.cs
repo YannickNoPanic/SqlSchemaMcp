@@ -1,15 +1,23 @@
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SqlSchemaMcp.Configuration;
 
 namespace SqlSchemaMcp.Data;
 
-public abstract partial class SqlQueryBase(IOptions<SqlServerOptions> options)
+public abstract partial class SqlQueryBase(IOptions<SqlServerOptions> options, ILogger logger)
 {
     protected readonly Dictionary<string, string> _databases = options.Value.Databases;
+
+    protected string SafeError(Exception ex, [CallerMemberName] string? operation = null)
+    {
+        logger.LogError(ex, "Query operation {Operation} failed", operation);
+        return "ERROR: the query failed. Check the server log for details.";
+    }
 
     protected string UnknownDatabase(string database) =>
         $"ERROR: Unknown database '{database}'. Available: {string.Join(", ", _databases.Keys)}";
