@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SqlSchemaMcp.Auditing;
 using SqlSchemaMcp.Configuration;
 using SqlSchemaMcp.Data;
 using SqlSchemaMcp.Security;
@@ -158,6 +159,7 @@ static void RegisterServices(IConfiguration configuration, IServiceCollection se
 {
     services.Configure<SqlServerOptions>(configuration.GetSection("SqlServer"));
     services.Configure<SecurityOptions>(configuration.GetSection("Security"));
+    services.Configure<AuditOptions>(configuration.GetSection("Audit"));
 
     services.AddSingleton<SchemaQueries>();
     services.AddSingleton<AnalysisQueries>();
@@ -168,6 +170,7 @@ static void RegisterServices(IConfiguration configuration, IServiceCollection se
     services.AddSingleton<SecurityQueries>();
     services.AddSingleton<QueryQueries>();
     services.AddSingleton<IPermissionProbe, SqlServerPermissionProbe>();
+    services.AddSingleton<IAuditLog, FileAuditLog>();
 }
 
 static async Task<bool> RunStartupGateAsync(IServiceProvider services, CancellationToken ct)

@@ -1,16 +1,20 @@
 using System.ComponentModel;
 using System.Text;
 using ModelContextProtocol.Server;
+using SqlSchemaMcp.Auditing;
 using SqlSchemaMcp.Data;
 
 namespace SqlSchemaMcp.Tools;
 
 [McpServerToolType]
-public sealed class ConstraintTools
+public sealed class ConstraintTools(IAuditLog audit)
 {
     [McpServerTool, Description("List all constraint/context entries. Optionally filter by database name or object name (partial match).")]
-    public static string ListConstraints(
-        [Description("Optional filter string — matches against database name or object name")] string? filter = null)
+    public Task<string> ListConstraints(
+        [Description("Optional filter string — matches against database name or object name")] string? filter = null) =>
+        audit.Invoke(nameof(ListConstraints), "(constraints)", $"filter={AuditSummary.Truncate(filter)}", () => Task.FromResult(BuildReport(filter)));
+
+    private static string BuildReport(string? filter)
     {
         var entries = ConstraintRepository.List(filter);
 

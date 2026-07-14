@@ -11,3 +11,9 @@ public interface IAuditLog
     /// </summary>
     Task<string> Invoke(string tool, string database, string parametersSummary, Func<Task<string>> body);
 }
+
+public static class AuditSummary
+{
+    public static string Truncate(string? value, int max = 200) =>
+        string.IsNullOrEmpty(value) ? "" : value.Length <= max ? value : value[..max] + "...";
+}
