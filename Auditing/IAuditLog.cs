@@ -9,7 +9,7 @@ public interface IAuditLog
     /// Records the invocation of a tool and returns the tool's result. Timing and outcome
     /// are captured even when the body throws (the exception is re-thrown after recording).
     /// Success reflects both the absence of a thrown exception and that the result does not
-    /// begin with the ERROR: sentinel used by this codebase's Result-as-string convention.
+    /// begin with the ERROR: or UNSUPPORTED: sentinel used by this codebase's Result-as-string convention.
     /// </summary>
     Task<string> Invoke(string tool, string database, string parametersSummary, Func<Task<string>> body);
 }

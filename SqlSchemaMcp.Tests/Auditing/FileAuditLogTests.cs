@@ -43,6 +43,24 @@ public sealed class FileAuditLogTests : IDisposable
     }
 
     [Fact]
+    public async Task Invoke_BodyReturnsUnsupportedString_RecordsFailure()
+    {
+        var sut = new FileAuditLog(Options.Create(new AuditOptions { Enabled = true, Path = _path }));
+
+        var result = await sut.Invoke(
+            "AnalyzeWaitStats",
+            "reporting",
+            "",
+            () => Task.FromResult("UNSUPPORTED: Tool 'AnalyzeWaitStats' is not available for engine 'Postgres'. Ask the maintainer to add support if you need this."));
+
+        result.Should().StartWith("UNSUPPORTED:");
+
+        var line = (await File.ReadAllLinesAsync(_path))[0];
+        var entry = JsonSerializer.Deserialize<AuditEntry>(line, JsonSerializerOptions.Web);
+        entry!.Success.Should().BeFalse();
+    }
+
+    [Fact]
     public async Task Invoke_BodyThrows_RecordsFailureAndRethrows()
     {
         var sut = new FileAuditLog(Options.Create(new AuditOptions { Enabled = true, Path = _path }));

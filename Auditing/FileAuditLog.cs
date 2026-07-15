@@ -31,7 +31,8 @@ public sealed class FileAuditLog : IAuditLog
         try
         {
             var result = await body();
-            success = !result.StartsWith("ERROR:", StringComparison.Ordinal);
+            success = !result.StartsWith("ERROR:", StringComparison.Ordinal)
+                && !result.StartsWith("UNSUPPORTED:", StringComparison.Ordinal);
             return result;
         }
         finally
