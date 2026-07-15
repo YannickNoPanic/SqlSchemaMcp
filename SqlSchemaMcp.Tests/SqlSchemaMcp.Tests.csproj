@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SqlSchemaMcp.csproj" />
+    <ProjectReference Include="..\SqlSchemaMcp.Abstractions\SqlSchemaMcp.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

@@ -17,6 +17,11 @@
 
   <ItemGroup>
     <Compile Remove="SqlSchemaMcp.Tests\**" />
+    <Compile Remove="SqlSchemaMcp.Abstractions\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="SqlSchemaMcp.Abstractions\SqlSchemaMcp.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>
