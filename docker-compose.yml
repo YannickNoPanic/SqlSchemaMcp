@@ -6,10 +6,14 @@ services:
     environment:
       SQLMCP_Mcp__Port: ${MCP_PORT:-5101}
       SQLMCP_Mcp__BindAddress: 0.0.0.0
+      # "poc" and "azure" are just example database keys, not fixed names — the server accepts
+      # any key you configure. Rename these, remove one, or add more by adding another
+      # SQLMCP_SqlServer__Databases__<yourkey>: ${YOUR_ENV_VAR} line, then referencing <yourkey>
+      # as the `database` argument in tool calls.
       SQLMCP_SqlServer__Databases__poc: ${SQLMCP_POC_CONNECTION_STRING}
       SQLMCP_SqlServer__Databases__azure: ${SQLMCP_AZURE_CONNECTION_STRING}
       SQLMCP_Security__VerifyLoginsAtStartup: "true"
-      SQLMCP_Security__AllowWritableLogin: "false"
+      SQLMCP_Security__AllowWritableLogin: ${SQLMCP_ALLOW_WRITABLE_LOGIN:-false}
       SQLMCP_Audit__Enabled: "true"
       SQLMCP_Audit__Path: /data/audit-log.jsonl
     volumes:

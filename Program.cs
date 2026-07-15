@@ -179,6 +179,12 @@ static async Task<bool> RunStartupGateAsync(IServiceProvider services, Cancellat
     var security = services.GetRequiredService<IOptions<SecurityOptions>>().Value;
     var probe = services.GetRequiredService<IPermissionProbe>();
 
+    var configurationErrors = options.GetConfigurationErrors();
+    foreach (var error in configurationErrors)
+        Console.Error.WriteLine($"[SqlSchemaMcp] CRITICAL: {error}");
+    if (configurationErrors.Count > 0)
+        return false;
+
     var results = new List<LoginPermissionResult>();
     foreach (var (name, connectionString) in options.Databases)
         results.Add(await probe.ProbeAsync(name, connectionString, ct));

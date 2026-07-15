@@ -5,6 +5,7 @@ audit-log*.jsonl
 .env
 bin/
 obj/
+artifacts/
 .vs/
 *.user
 planning/

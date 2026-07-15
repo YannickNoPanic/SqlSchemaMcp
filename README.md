@@ -53,7 +53,16 @@ docker compose up -d --build
 ```
 
 The port is fully configurable via `MCP_PORT` in `.env` — it drives both the published host
-port and the server's internal `Mcp:Port`, so the two never drift apart. Confirm it's up:
+port and the server's internal `Mcp:Port`, so the two never drift apart.
+
+`poc` and `azure` in `docker-compose.yml`/`.env.example` are just example database keys, not
+fixed names — rename them or add more by adding another `SQLMCP_SqlServer__Databases__<yourkey>`
+line plus its own connection-string env var. If your login has write permissions and you
+accept that risk, set `SQLMCP_ALLOW_WRITABLE_LOGIN=true` in `.env` instead of editing code.
+The connection-string env var value must be the raw SQL Server connection string only, for example
+`Server=...;Database=...;Encrypt=true;...`. Do not include another `NAME=` prefix inside the value.
+
+Confirm it's up:
 
 ```
 curl http://localhost:5101/
@@ -140,6 +149,9 @@ These env vars are read by `Program.cs` with prefix `SQLMCP_` and override any v
 | `SQLMCP_Audit__Path` | Override `Audit:Path` |
 
 The `__` separator maps to nested JSON keys. Add any database name you configure in appsettings.
+Connection-string values must be raw connection strings. If startup reports
+`Keyword not supported: 'sqlmcp_azure_connection_string'`, the configured value contains an
+environment-variable assignment instead of just the SQL Server connection string.
 
 ---
 
