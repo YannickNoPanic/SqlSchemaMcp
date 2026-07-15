@@ -31,7 +31,7 @@ public static class DatabaseConfigLoader
             if (string.IsNullOrWhiteSpace(connectionString))
                 throw new InvalidOperationException($"Database '{child.Key}' declares an engine but no connection string.");
 
-            if (!Enum.TryParse<DatabaseEngine>(engineValue, ignoreCase: true, out var engine))
+            if (!Enum.TryParse<DatabaseEngine>(engineValue, ignoreCase: true, out var engine) || !Enum.IsDefined(engine))
                 throw new InvalidOperationException($"Database '{child.Key}' declares unsupported engine '{engineValue}'.");
 
             databases.Add(new DatabaseConfig(child.Key, engine, connectionString));

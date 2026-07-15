@@ -71,4 +71,19 @@ public sealed class DatabaseConfigLoaderTests
         act.Should().Throw<InvalidOperationException>()
             .WithMessage("Database 'bad' declares an engine but no connection string.");
     }
+
+    [Fact]
+    public void Load_ObjectFormWithUndefinedNumericEngine_ThrowsClearError()
+    {
+        var configuration = Build(new()
+        {
+            ["SqlServer:Databases:bad:Engine"] = "999",
+            ["SqlServer:Databases:bad:ConnectionString"] = "Server=x;"
+        });
+
+        var act = () => DatabaseConfigLoader.Load(configuration);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("Database 'bad' declares unsupported engine '999'.");
+    }
 }
