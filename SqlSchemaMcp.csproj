@@ -18,6 +18,12 @@
   <ItemGroup>
     <Compile Remove="SqlSchemaMcp.Tests\**" />
     <Compile Remove="SqlSchemaMcp.Abstractions\**" />
+    <Content Remove="SqlSchemaMcp.Tests\**" />
+    <Content Remove="SqlSchemaMcp.Abstractions\**" />
+    <EmbeddedResource Remove="SqlSchemaMcp.Tests\**" />
+    <EmbeddedResource Remove="SqlSchemaMcp.Abstractions\**" />
+    <None Remove="SqlSchemaMcp.Tests\**" />
+    <None Remove="SqlSchemaMcp.Abstractions\**" />
   </ItemGroup>
 
   <ItemGroup>
