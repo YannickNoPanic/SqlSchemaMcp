@@ -15,7 +15,7 @@ public static class NamingAnalyzer
         string[] hungarianPrefixes = ["tbl_", "sp_", "vw_", "col_", "f_", "fn_", "usp_"];
         string[] versionSuffixes = ["_v2", "_v3", "_v4", "_v5", "_final", "_old", "_backup", "_copy", "_new", "_temp", "_bak"];
 
-        foreach (var item in snapshot.Objects)
+        foreach (var item in snapshot.Objects.Where(item => !item.Type.Equals("TABLE", StringComparison.OrdinalIgnoreCase) || !AnalysisFilters.IsStagingTable(item.Name)))
         {
             string lower = item.Name.ToLowerInvariant();
             string label = $"  [{item.Schema}].[{item.Name}] ({item.Type})";
@@ -37,7 +37,7 @@ public static class NamingAnalyzer
         var colAllCaps = new List<string>();
         var colSnakeCase = new List<string>();
 
-        foreach (var item in snapshot.Columns)
+        foreach (var item in snapshot.Columns.Where(item => !AnalysisFilters.IsStagingTable(item.Table)))
         {
             string lower = item.Column.ToLowerInvariant();
             string label = $"  [{item.Schema}].[{item.Table}].{item.Column}";

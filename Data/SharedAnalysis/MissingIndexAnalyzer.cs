@@ -27,7 +27,7 @@ public static class MissingIndexAnalyzer
         sb.AppendLine();
 
         int count = 0;
-        foreach (var column in snapshot.Columns.Where(IsCandidate))
+        foreach (var column in snapshot.Columns.Where(column => !AnalysisFilters.IsStagingTable(column.Table)).Where(IsCandidate))
         {
             string key = $"{column.Schema}.{column.Table}.{column.Column}";
             if (snapshot.IndexedColumnKeys.Contains(key))

@@ -14,7 +14,7 @@ public static class MissingForeignKeyAnalyzer
         sb.AppendLine();
 
         int count = 0;
-        foreach (var column in snapshot.Columns.Where(IsForeignKeyCandidate))
+        foreach (var column in snapshot.Columns.Where(column => !AnalysisFilters.IsStagingTable(column.Table)).Where(IsForeignKeyCandidate))
         {
             string key = $"{column.Schema}.{column.Table}.{column.Column}";
             if (snapshot.ForeignKeyColumnKeys.Contains(key))

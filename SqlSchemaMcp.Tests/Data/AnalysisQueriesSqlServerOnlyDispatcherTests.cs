@@ -34,6 +34,16 @@ public sealed class AnalysisQueriesSqlServerOnlyDispatcherTests
         result.Should().Be("UNSUPPORTED: Tool 'AnalyzeDuplicateIndexes' is not available for engine 'Postgres'. Ask the maintainer to add support if you need this.");
     }
 
+    [Fact]
+    public async Task AnalyzeNamingConventions_SnapshotFailure_ReturnsSafeError()
+    {
+        var sut = CreateSut(DatabaseEngine.SqlServer, new ThrowingSnapshotCapability());
+
+        var result = await sut.AnalyzeNamingConventions("poc", CancellationToken.None);
+
+        result.Should().Be("ERROR: the query failed. Check the server log for details.");
+    }
+
     private static AnalysisQueries CreateSut(DatabaseEngine engine, object implementation)
     {
         var resolver = new CapabilityResolver(
@@ -49,6 +59,14 @@ public sealed class AnalysisQueriesSqlServerOnlyDispatcherTests
     private sealed class FakeEngine(DatabaseEngine kind) : IDatabaseEngine
     {
         public DatabaseEngine Kind { get; } = kind;
+    }
+
+    private sealed class ThrowingSnapshotCapability : IDatabaseEngine, ISchemaSnapshotCapability
+    {
+        public DatabaseEngine Kind => DatabaseEngine.SqlServer;
+
+        public Task<SchemaSnapshot> GetSchemaSnapshot(string database, CancellationToken ct) =>
+            throw new InvalidOperationException("catalog failed");
     }
 
     private sealed class FakeAnalysisCapability : IDatabaseEngine, ISqlServerAnalysisCapability

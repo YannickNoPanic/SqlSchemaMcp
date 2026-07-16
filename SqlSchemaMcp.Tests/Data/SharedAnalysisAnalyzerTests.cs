@@ -42,6 +42,38 @@ public sealed class SharedAnalysisAnalyzerTests
     }
 
     [Fact]
+    public void MissingForeignKeyAnalyzer_TinyIntId_IsNotCandidate()
+    {
+        var snapshot = new SchemaSnapshot(
+            [],
+            [new SchemaColumn("dbo", "Orders", "StatusId", ColumnTypeCategory.Other, "tinyint", "NO")],
+            EmptySet(),
+            EmptySet(),
+            EmptySet());
+
+        var result = MissingForeignKeyAnalyzer.Build("poc", snapshot);
+
+        result.Should().Contain("0 potential missing FK(s)");
+        result.Should().NotContain("[dbo].[Orders].StatusId");
+    }
+
+    [Fact]
+    public void MissingIndexAnalyzer_StagingTable_IsExcluded()
+    {
+        var snapshot = new SchemaSnapshot(
+            [],
+            [new SchemaColumn("dbo", "Orders_20260101_010203", "TenantId", ColumnTypeCategory.Integer, "int", "NO")],
+            EmptySet(),
+            EmptySet(),
+            EmptySet());
+
+        var result = MissingIndexAnalyzer.Build("poc", snapshot);
+
+        result.Should().Contain("0 potentially unindexed column(s)");
+        result.Should().NotContain("Orders_20260101_010203");
+    }
+
+    [Fact]
     public void MissingIndexAnalyzer_FilterColumnWithoutIndex_ReportsCandidate()
     {
         var snapshot = new SchemaSnapshot(

@@ -28,6 +28,42 @@ public sealed class CompareQueriesSnapshotTests
     }
 
     [Fact]
+    public async Task GetProcNames_UsesSchemaSnapshotCapability()
+    {
+        var sut = CreateSut(new SchemaSnapshot(
+            [
+                new SchemaObject("PROCEDURE", "dbo", "BuildOrders"),
+                new SchemaObject("TABLE", "dbo", "Orders")
+            ],
+            [],
+            EmptySet(),
+            EmptySet(),
+            EmptySet()));
+
+        var result = await sut.GetProcNames("poc", CancellationToken.None);
+
+        result.Should().BeEquivalentTo(["dbo.BuildOrders"]);
+    }
+
+    [Fact]
+    public async Task GetViewNames_UsesSchemaSnapshotCapability()
+    {
+        var sut = CreateSut(new SchemaSnapshot(
+            [
+                new SchemaObject("VIEW", "dbo", "OrderSummary"),
+                new SchemaObject("TABLE", "dbo", "Orders")
+            ],
+            [],
+            EmptySet(),
+            EmptySet(),
+            EmptySet()));
+
+        var result = await sut.GetViewNames("poc", CancellationToken.None);
+
+        result.Should().BeEquivalentTo(["dbo.OrderSummary"]);
+    }
+
+    [Fact]
     public async Task GetTableColumns_UsesSchemaSnapshotCapability()
     {
         var sut = CreateSut(new SchemaSnapshot(

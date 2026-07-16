@@ -41,18 +41,27 @@ public sealed class AnalysisQueries(
             MissingIndexAnalyzer.Build(database, await capability.GetSchemaSnapshot(database, cancellationToken)));
     }
 
-    private Task<string> ResolveSchemaSnapshot(
+    private async Task<string> ResolveSchemaSnapshot(
         string database,
         string toolName,
         Func<ISchemaSnapshotCapability, Task<string>> execute)
     {
         if (resolver.TryResolve<ISchemaSnapshotCapability>(database, out _, out var capability) && capability is not null)
-            return execute(capability);
+        {
+            try
+            {
+                return await execute(capability);
+            }
+            catch (Exception ex)
+            {
+                return SafeError(ex, toolName);
+            }
+        }
 
-        return Task.FromResult(
+        return
             resolver.TryGetEngine(database, out var engine)
                 ? Sentinels.Unsupported(toolName, engine)
-                : Sentinels.UnknownDatabase(resolver.DatabaseNames, database));
+                : Sentinels.UnknownDatabase(resolver.DatabaseNames, database);
     }
     public Task<string> AnalyzeDuplicateIndexes(
         string database,

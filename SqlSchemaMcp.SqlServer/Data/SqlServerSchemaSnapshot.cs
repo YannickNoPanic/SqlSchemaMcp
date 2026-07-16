@@ -15,24 +15,16 @@ public sealed class SqlServerSchemaSnapshot(IOptions<SqlServerEngineOptions> opt
         if (!_databases.TryGetValue(database, out var connectionString))
             return EmptySnapshot();
 
-        try
-        {
-            await using var conn = new SqlConnection(connectionString);
-            await conn.OpenAsync(ct);
+        await using var conn = new SqlConnection(connectionString);
+        await conn.OpenAsync(ct);
 
-            var objects = await LoadObjects(conn, ct);
-            var columns = await LoadColumns(conn, ct);
-            var fkKeys = await LoadKeys(conn, ForeignKeySql, ct);
-            var pkKeys = await LoadKeys(conn, PrimaryKeySql, ct);
-            var indexedKeys = await LoadKeys(conn, IndexedColumnSql, ct);
+        var objects = await LoadObjects(conn, ct);
+        var columns = await LoadColumns(conn, ct);
+        var fkKeys = await LoadKeys(conn, ForeignKeySql, ct);
+        var pkKeys = await LoadKeys(conn, PrimaryKeySql, ct);
+        var indexedKeys = await LoadKeys(conn, IndexedColumnSql, ct);
 
-            return new SchemaSnapshot(objects, columns, fkKeys, pkKeys, indexedKeys);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Schema snapshot operation failed");
-            return EmptySnapshot();
-        }
+        return new SchemaSnapshot(objects, columns, fkKeys, pkKeys, indexedKeys);
     }
 
     private static SchemaSnapshot EmptySnapshot() =>
@@ -118,7 +110,7 @@ public sealed class SqlServerSchemaSnapshot(IOptions<SqlServerEngineOptions> opt
     private static ColumnTypeCategory ToCategory(string dataType) =>
         dataType.ToLowerInvariant() switch
         {
-            "int" or "bigint" or "smallint" or "tinyint" => ColumnTypeCategory.Integer,
+            "int" or "bigint" or "smallint" => ColumnTypeCategory.Integer,
             "uniqueidentifier" => ColumnTypeCategory.Guid,
             "nvarchar" or "varchar" or "nchar" or "char" or "text" or "ntext" => ColumnTypeCategory.Text,
             "bit" => ColumnTypeCategory.Boolean,
