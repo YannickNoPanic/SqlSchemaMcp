@@ -3,12 +3,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SqlSchemaMcp.Abstractions;
 using SqlSchemaMcp.Abstractions.Security;
 using SqlSchemaMcp.Auditing;
 using SqlSchemaMcp.Configuration;
 using SqlSchemaMcp.Data;
+using SqlSchemaMcp.Engines;
 using SqlSchemaMcp.Security;
+using SqlSchemaMcp.SqlServer;
 using SqlSchemaMcp.SqlServer.Configuration;
+using SqlSchemaMcp.SqlServer.Data;
 using SqlSchemaMcp.SqlServer.Security;
 using SqlSchemaMcp.Tools;
 
@@ -161,10 +165,14 @@ else
 static void RegisterServices(IConfiguration configuration, IServiceCollection services)
 {
     services.Configure<SqlServerOptions>(configuration.GetSection("SqlServer"));
+    var databases = DatabaseConfigLoader.Load(configuration);
+    var sqlServerDatabases = databases
+        .Where(database => database.Engine == DatabaseEngine.SqlServer)
+        .ToDictionary(database => database.Name, database => database.ConnectionString, StringComparer.OrdinalIgnoreCase);
     services.AddOptions<SqlServerEngineOptions>()
-        .Configure<IOptions<SqlServerOptions>>((engineOptions, hostOptions) =>
+        .Configure(engineOptions =>
         {
-            foreach (var (name, connectionString) in hostOptions.Value.Databases)
+            foreach (var (name, connectionString) in sqlServerDatabases)
                 engineOptions.Databases[name] = connectionString;
         });
     services.Configure<SecurityOptions>(configuration.GetSection("Security"));
@@ -178,6 +186,15 @@ static void RegisterServices(IConfiguration configuration, IServiceCollection se
     services.AddSingleton<DataQueries>();
     services.AddSingleton<SecurityQueries>();
     services.AddSingleton<QueryQueries>();
+    services.AddSingleton<SqlServerQuery>();
+    services.AddSingleton<SqlServerEngine>();
+    services.AddSingleton<ICapabilityResolver>(sp =>
+        new CapabilityResolver(
+            databases,
+            new Dictionary<DatabaseEngine, object>
+            {
+                [DatabaseEngine.SqlServer] = sp.GetRequiredService<SqlServerEngine>()
+            }));
     services.AddSingleton<IPermissionProbe, SqlServerPermissionProbe>();
     services.AddSingleton<IAuditLog, FileAuditLog>();
 }
