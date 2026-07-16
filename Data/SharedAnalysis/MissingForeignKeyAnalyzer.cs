@@ -41,8 +41,7 @@ public static class MissingForeignKeyAnalyzer
         if (column.TypeCategory is not (ColumnTypeCategory.Integer or ColumnTypeCategory.Guid))
             return false;
 
-        return column.Column.EndsWith("Id", StringComparison.Ordinal)
-            || column.Column.EndsWith("ID", StringComparison.Ordinal)
-            || column.Column.EndsWith("_id", StringComparison.OrdinalIgnoreCase);
+        // Matches SQL Server's case-insensitive LIKE '%Id' semantics exactly.
+        return column.Column.EndsWith("Id", StringComparison.OrdinalIgnoreCase);
     }
 }

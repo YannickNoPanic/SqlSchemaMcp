@@ -46,9 +46,8 @@ public static class MissingIndexAnalyzer
         return sb.ToString();
     }
 
+    // Matches SQL Server's case-insensitive LIKE '%Id' semantics exactly.
     private static bool IsCandidate(SchemaColumn column) =>
-        column.Column.EndsWith("Id", StringComparison.Ordinal)
-        || column.Column.EndsWith("ID", StringComparison.Ordinal)
-        || column.Column.EndsWith("_id", StringComparison.OrdinalIgnoreCase)
+        column.Column.EndsWith("Id", StringComparison.OrdinalIgnoreCase)
         || CommonFilterColumns.Contains(column.Column);
 }

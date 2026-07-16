@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Text;
-using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SqlSchemaMcp.Abstractions;

@@ -42,6 +42,24 @@ public sealed class SharedAnalysisAnalyzerTests
     }
 
     [Fact]
+    public void MissingForeignKeyAnalyzer_LowercaseIdSuffixNoUnderscore_ReportsCandidate()
+    {
+        // Regression test: original SQL Server implementation used a case-insensitive
+        // LIKE '%Id' match, which also matches a lowercase "id" suffix with no underscore.
+        var snapshot = new SchemaSnapshot(
+            [],
+            [new SchemaColumn("dbo", "Orders", "Tenantid", ColumnTypeCategory.Integer, "int", "NO")],
+            EmptySet(),
+            EmptySet(),
+            EmptySet());
+
+        var result = MissingForeignKeyAnalyzer.Build("poc", snapshot);
+
+        result.Should().Contain("[dbo].[Orders].Tenantid (int)");
+        result.Should().Contain("1 potential missing FK(s)");
+    }
+
+    [Fact]
     public void MissingForeignKeyAnalyzer_TinyIntId_IsNotCandidate()
     {
         var snapshot = new SchemaSnapshot(
@@ -86,6 +104,24 @@ public sealed class SharedAnalysisAnalyzerTests
         var result = MissingIndexAnalyzer.Build("poc", snapshot);
 
         result.Should().Contain("[dbo].[Orders].TenantId");
+        result.Should().Contain("1 potentially unindexed column(s)");
+    }
+
+    [Fact]
+    public void MissingIndexAnalyzer_LowercaseIdSuffixNoUnderscore_ReportsCandidate()
+    {
+        // Regression test: original SQL Server implementation used a case-insensitive
+        // LIKE '%Id' match, which also matches a lowercase "id" suffix with no underscore.
+        var snapshot = new SchemaSnapshot(
+            [],
+            [new SchemaColumn("dbo", "Orders", "Tenantid", ColumnTypeCategory.Integer, "int", "NO")],
+            EmptySet(),
+            EmptySet(),
+            EmptySet());
+
+        var result = MissingIndexAnalyzer.Build("poc", snapshot);
+
+        result.Should().Contain("[dbo].[Orders].Tenantid");
         result.Should().Contain("1 potentially unindexed column(s)");
     }
 
