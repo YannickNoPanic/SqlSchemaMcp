@@ -79,6 +79,19 @@ public sealed class CompareQueriesSnapshotTests
             .Which.Should().Be(new ColumnInfo("Name", "nvarchar(100)", "YES"));
     }
 
+    [Fact]
+    public async Task GetTableNames_SnapshotFailure_ReturnsEmptySet()
+    {
+        var resolver = new CapabilityResolver(
+            [new DatabaseConfig("poc", DatabaseEngine.SqlServer, "cs")],
+            new Dictionary<DatabaseEngine, object> { [DatabaseEngine.SqlServer] = new ThrowingSnapshotCapability() });
+        var sut = new CompareQueries(resolver);
+
+        var result = await sut.GetTableNames("poc", CancellationToken.None);
+
+        result.Should().BeEmpty();
+    }
+
     private static CompareQueries CreateSut(SchemaSnapshot snapshot)
     {
         var capability = new FakeSnapshotCapability(snapshot);
@@ -97,5 +110,13 @@ public sealed class CompareQueriesSnapshotTests
 
         public Task<SchemaSnapshot> GetSchemaSnapshot(string database, CancellationToken ct) =>
             Task.FromResult(snapshot);
+    }
+
+    private sealed class ThrowingSnapshotCapability : IDatabaseEngine, ISchemaSnapshotCapability
+    {
+        public DatabaseEngine Kind => DatabaseEngine.SqlServer;
+
+        public Task<SchemaSnapshot> GetSchemaSnapshot(string database, CancellationToken ct) =>
+            throw new InvalidOperationException("catalog failed");
     }
 }

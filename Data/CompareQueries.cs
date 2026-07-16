@@ -90,7 +90,14 @@ public sealed class CompareQueries(ICapabilityResolver resolver)
         if (!resolver.TryResolve<ISchemaSnapshotCapability>(database, out _, out var capability) || capability is null)
             return null;
 
-        return await capability.GetSchemaSnapshot(database, ct);
+        try
+        {
+            return await capability.GetSchemaSnapshot(database, ct);
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     private Task<T> ResolveSqlServerSupport<T>(string database, Func<SqlServerCompareSupport, Task<T>> execute)
