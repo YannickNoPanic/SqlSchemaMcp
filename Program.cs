@@ -194,6 +194,8 @@ static void RegisterServices(IConfiguration configuration, IServiceCollection se
     services.AddSingleton<SqlServerPipeline>();
     services.AddSingleton<SqlServerSecurity>();
     services.AddSingleton<SqlServerAnalysis>();
+    services.AddSingleton<SqlServerSchemaSnapshot>();
+    services.AddSingleton<SqlServerCompareSupport>();
     services.AddSingleton<SqlServerEngine>();
     services.AddSingleton<ICapabilityResolver>(sp =>
         new CapabilityResolver(

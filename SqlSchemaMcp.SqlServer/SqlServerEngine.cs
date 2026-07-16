@@ -12,7 +12,9 @@ public sealed class SqlServerEngine(
     SqlServerDiagnostics diagnostics,
     SqlServerPipeline pipeline,
     SqlServerSecurity security,
-    SqlServerAnalysis analysis)
+    SqlServerAnalysis analysis,
+    SqlServerSchemaSnapshot schemaSnapshot,
+    SqlServerCompareSupport compareSupport)
     : IDatabaseEngine,
       IReadOnlyQueryCapability,
       ISchemaCapability,
@@ -21,9 +23,11 @@ public sealed class SqlServerEngine(
       ISqlServerDiagnosticsCapability,
       ISqlServerPipelineCapability,
       ISqlServerSecurityCapability,
-      ISqlServerAnalysisCapability
+      ISqlServerAnalysisCapability,
+      ISchemaSnapshotCapability
 {
     public DatabaseEngine Kind => DatabaseEngine.SqlServer;
+    public SqlServerCompareSupport CompareSupport => compareSupport;
 
     public Task<string> ExecuteQuery(string database, string sql, CancellationToken ct) =>
         query.ExecuteQuery(database, sql, ct);
@@ -171,4 +175,16 @@ public sealed class SqlServerEngine(
 
     public Task<string> GenerateDatabaseSummary(string database, CancellationToken ct) =>
         analysis.GenerateDatabaseSummary(database, ct);
+
+    public Task<SchemaSnapshot> GetSchemaSnapshot(string database, CancellationToken ct) =>
+        schemaSnapshot.GetSchemaSnapshot(database, ct);
+
+    public Task<List<ColumnInfo>> GetTableColumns(string database, string tableName, CancellationToken ct) =>
+        compareSupport.GetTableColumns(database, tableName, ct);
+
+    public Task<(int LineCount, List<string> TablesReferenced)> GetProcStats(string database, string procName, CancellationToken ct) =>
+        compareSupport.GetProcStats(database, procName, ct);
+
+    public Task<(int LineCount, List<string> TablesReferenced)> GetViewStats(string database, string viewName, CancellationToken ct) =>
+        compareSupport.GetViewStats(database, viewName, ct);
 }
