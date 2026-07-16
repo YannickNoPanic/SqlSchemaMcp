@@ -189,6 +189,7 @@ static void RegisterServices(IConfiguration configuration, IServiceCollection se
     services.AddSingleton<SqlServerQuery>();
     services.AddSingleton<SqlServerSchema>();
     services.AddSingleton<SqlServerSchemaExtras>();
+    services.AddSingleton<SqlServerDataSampling>();
     services.AddSingleton<SqlServerEngine>();
     services.AddSingleton<ICapabilityResolver>(sp =>
         new CapabilityResolver(

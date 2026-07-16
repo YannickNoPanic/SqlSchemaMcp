@@ -7,11 +7,13 @@ namespace SqlSchemaMcp.SqlServer;
 public sealed class SqlServerEngine(
     SqlServerQuery query,
     SqlServerSchema schema,
-    SqlServerSchemaExtras schemaExtras)
+    SqlServerSchemaExtras schemaExtras,
+    SqlServerDataSampling dataSampling)
     : IDatabaseEngine,
       IReadOnlyQueryCapability,
       ISchemaCapability,
-      ISqlServerSchemaExtrasCapability
+      ISqlServerSchemaExtrasCapability,
+      IDataSamplingCapability
 {
     public DatabaseEngine Kind => DatabaseEngine.SqlServer;
 
@@ -65,4 +67,16 @@ public sealed class SqlServerEngine(
 
     public Task<string> GetDdlTriggerDefinition(string database, string triggerName, CancellationToken ct) =>
         schemaExtras.GetDdlTriggerDefinition(database, triggerName, ct);
+
+    public Task<string> SampleTableData(string database, string tableName, int rows, CancellationToken ct) =>
+        dataSampling.SampleTableData(database, tableName, rows, ct);
+
+    public Task<string> AnalyzeColumnDistribution(string database, string tableName, string columnName, CancellationToken ct) =>
+        dataSampling.AnalyzeColumnDistribution(database, tableName, columnName, ct);
+
+    public Task<string> FindNullableColumnsWithNoNulls(string database, string tableName, CancellationToken ct) =>
+        dataSampling.FindNullableColumnsWithNoNulls(database, tableName, ct);
+
+    public Task<string> FindDuplicateRows(string database, string tableName, string columns, int top, CancellationToken ct) =>
+        dataSampling.FindDuplicateRows(database, tableName, columns, top, ct);
 }
