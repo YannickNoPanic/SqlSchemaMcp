@@ -164,6 +164,10 @@ configured databases, but tools return `UNSUPPORTED:` unless that engine impleme
 specific capability. If you need a missing capability, ask the maintainer to add support
 for that engine.
 
+Startup read-only probing is SQL Server-specific. Object-form PostgreSQL or MariaDB entries
+are kept in the resolver so tools can return `UNSUPPORTED:`, but they are not passed to the
+SQL Server permission probe.
+
 ### Environment variable overrides
 
 These env vars are read by `Program.cs` with prefix `SQLMCP_` and override any value in
@@ -191,7 +195,7 @@ environment-variable assignment instead of just the SQL Server connection string
 
 This server is read-only by design, enforced at two levels rather than by convention alone:
 
-- **Startup gate** — on launch, every configured database login is probed for write
+- **Startup gate** — on launch, every configured SQL Server database login is probed for write
   permissions. If any login can write, the server refuses to start (`Security:VerifyLoginsAtStartup`,
   default `true`; escape hatch `Security:AllowWritableLogin`, default `false`).
 - **Statement allowlist** — `execute_query` parses every statement with the T-SQL parser and

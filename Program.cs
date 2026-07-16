@@ -164,15 +164,18 @@ else
 
 static void RegisterServices(IConfiguration configuration, IServiceCollection services)
 {
-    services.Configure<SqlServerOptions>(configuration.GetSection("SqlServer"));
-    var databases = DatabaseConfigLoader.Load(configuration);
-    var sqlServerDatabases = databases
-        .Where(database => database.Engine == DatabaseEngine.SqlServer)
-        .ToDictionary(database => database.Name, database => database.ConnectionString, StringComparer.OrdinalIgnoreCase);
+    var databases = new ConfiguredDatabases(DatabaseConfigLoader.Load(configuration));
+    services.AddSingleton(databases);
+    services.AddOptions<SqlServerOptions>()
+        .Configure(options =>
+        {
+            foreach (var (name, connectionString) in databases.SqlServerConnectionStrings)
+                options.Databases[name] = connectionString;
+        });
     services.AddOptions<SqlServerEngineOptions>()
         .Configure(engineOptions =>
         {
-            foreach (var (name, connectionString) in sqlServerDatabases)
+            foreach (var (name, connectionString) in databases.SqlServerConnectionStrings)
                 engineOptions.Databases[name] = connectionString;
         });
     services.Configure<SecurityOptions>(configuration.GetSection("Security"));
@@ -199,7 +202,7 @@ static void RegisterServices(IConfiguration configuration, IServiceCollection se
     services.AddSingleton<SqlServerEngine>();
     services.AddSingleton<ICapabilityResolver>(sp =>
         new CapabilityResolver(
-            databases,
+            databases.All,
             new Dictionary<DatabaseEngine, object>
             {
                 [DatabaseEngine.SqlServer] = sp.GetRequiredService<SqlServerEngine>()

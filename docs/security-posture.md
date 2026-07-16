@@ -17,8 +17,10 @@ ALTER ROLE db_datareader ADD MEMBER sqlschema_ro;
 -- Do NOT add db_datawriter, db_ddladmin, db_owner, or grant CONTROL.
 ```
 
-Do this for every database configured under `SqlServer:Databases` (both `poc` and `azure`,
-or whatever names you configure).
+Do this for every SQL Server database configured under `SqlServer:Databases` (both `poc`
+and `azure`, or whatever SQL Server names you configure). Object-form PostgreSQL or MariaDB
+entries are recognized by the multi-engine resolver, but they are not probed by the SQL Server
+permission gate until those engines provide their own permission probes.
 
 ---
 
@@ -41,7 +43,7 @@ capability implementation.
 ### 1. Startup permission gate (primary defence)
 
 On every launch (stdio or HTTP), `SqlServerPermissionProbe` (`Security/SqlServerPermissionProbe.cs`)
-queries each configured login for `sysadmin`, `db_owner`, `db_datawriter`, `db_ddladmin`
+queries each configured SQL Server login for `sysadmin`, `db_owner`, `db_datawriter`, `db_ddladmin`
 membership, and any explicit `INSERT`/`UPDATE`/`DELETE`/`ALTER`/`CONTROL`/`CREATE TABLE`
 grant. `ReadOnlyStartupGate.Evaluate` (`Security/ReadOnlyStartupGate.cs`) then decides whether
 the process is allowed to start:
@@ -119,9 +121,9 @@ per call in an append-only file:
   of the parameters (including, for `execute_query`, the SQL text itself), elapsed
   milliseconds, and a `Success` flag.
 - **What `Success` means:** `true` only if the tool call did not throw **and** its returned
-  string does not start with the `ERROR:` sentinel. A call that completes without an
-  exception but returns a handled `ERROR:` result (e.g. an unknown database name, a rejected
-  statement, a caught SQL exception) is recorded as `Success: false`.
+  string does not start with the `ERROR:` or `UNSUPPORTED:` sentinel. A call that completes
+  without an exception but returns a handled `ERROR:` result or unsupported-capability result
+  is recorded as `Success: false`.
 - **Where it lives:** `Audit:Path`, or by default a file named `audit-log.jsonl` in the
   project root (resolved by walking up from the executing assembly to the directory
   containing the `.csproj`).

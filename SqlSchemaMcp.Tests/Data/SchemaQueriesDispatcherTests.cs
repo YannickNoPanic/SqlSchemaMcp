@@ -46,6 +46,16 @@ public sealed class SchemaQueriesDispatcherTests
     }
 
     [Fact]
+    public async Task ListTables_KnownDatabaseWithoutSchemaCapability_ReturnsUnsupported()
+    {
+        var sut = CreateSut(DatabaseEngine.Postgres, new FakeEngine(DatabaseEngine.Postgres));
+
+        var result = await sut.ListTables("poc", null, null, CancellationToken.None);
+
+        result.Should().Be("UNSUPPORTED: Tool 'ListTables' is not available for engine 'Postgres'. Ask the maintainer to add support if you need this.");
+    }
+
+    [Fact]
     public async Task ListTables_UnknownDatabase_ReturnsUnknownDatabaseError()
     {
         var sut = new SchemaQueries(new CapabilityResolver([], new Dictionary<DatabaseEngine, object>()));
@@ -62,6 +72,11 @@ public sealed class SchemaQueriesDispatcherTests
             new Dictionary<DatabaseEngine, object> { [engine] = implementation });
 
         return new SchemaQueries(resolver);
+    }
+
+    private sealed class FakeEngine(DatabaseEngine kind) : IDatabaseEngine
+    {
+        public DatabaseEngine Kind { get; } = kind;
     }
 
     private sealed class FakeSchemaCapability : IDatabaseEngine, ISchemaCapability

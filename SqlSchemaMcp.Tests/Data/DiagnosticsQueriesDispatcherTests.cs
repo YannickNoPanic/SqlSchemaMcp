@@ -42,6 +42,16 @@ public sealed class DiagnosticsQueriesDispatcherTests
         result.Should().Be("UNSUPPORTED: Tool 'ListAgentJobs' is not available for engine 'Postgres'. Ask the maintainer to add support if you need this.");
     }
 
+    [Fact]
+    public async Task AnalyzeWaitStats_KnownDatabaseWithoutCapability_ReturnsUnsupported()
+    {
+        var sut = CreateSut(DatabaseEngine.Postgres, new FakeEngine(DatabaseEngine.Postgres));
+
+        var result = await sut.AnalyzeWaitStats("poc", CancellationToken.None);
+
+        result.Should().Be("UNSUPPORTED: Tool 'AnalyzeWaitStats' is not available for engine 'Postgres'. Ask the maintainer to add support if you need this.");
+    }
+
     private static DiagnosticsQueries CreateSut(DatabaseEngine engine, object implementation)
     {
         var resolver = new CapabilityResolver(
