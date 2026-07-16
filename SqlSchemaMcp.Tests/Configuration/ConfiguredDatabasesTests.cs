@@ -36,4 +36,34 @@ public sealed class ConfiguredDatabasesTests
 
         result.Should().BeEquivalentTo(configs);
     }
+
+    [Fact]
+    public void PostgresConnectionStrings_ReturnsOnlyPostgresDatabases()
+    {
+        var sut = new ConfiguredDatabases([
+            new DatabaseConfig("poc", DatabaseEngine.SqlServer, "Server=poc;"),
+            new DatabaseConfig("reporting", DatabaseEngine.Postgres, "Host=reporting;"),
+            new DatabaseConfig("legacy", DatabaseEngine.MariaDb, "Server=legacy;")
+        ]);
+
+        var result = sut.PostgresConnectionStrings;
+
+        result.Should().ContainSingle();
+        result.Should().ContainKey("reporting").WhoseValue.Should().Be("Host=reporting;");
+    }
+
+    [Fact]
+    public void MariaDbConnectionStrings_ReturnsOnlyMariaDbDatabases()
+    {
+        var sut = new ConfiguredDatabases([
+            new DatabaseConfig("poc", DatabaseEngine.SqlServer, "Server=poc;"),
+            new DatabaseConfig("reporting", DatabaseEngine.Postgres, "Host=reporting;"),
+            new DatabaseConfig("legacy", DatabaseEngine.MariaDb, "Server=legacy;")
+        ]);
+
+        var result = sut.MariaDbConnectionStrings;
+
+        result.Should().ContainSingle();
+        result.Should().ContainKey("legacy").WhoseValue.Should().Be("Server=legacy;");
+    }
 }

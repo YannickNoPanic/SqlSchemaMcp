@@ -17,20 +17,30 @@
     <Compile Remove="SqlSchemaMcp.Tests\**" />
     <Compile Remove="SqlSchemaMcp.Abstractions\**" />
     <Compile Remove="SqlSchemaMcp.SqlServer\**" />
+    <Compile Remove="SqlSchemaMcp.Postgres\**" />
+    <Compile Remove="SqlSchemaMcp.MariaDb\**" />
     <Content Remove="SqlSchemaMcp.Tests\**" />
     <Content Remove="SqlSchemaMcp.Abstractions\**" />
     <Content Remove="SqlSchemaMcp.SqlServer\**" />
+    <Content Remove="SqlSchemaMcp.Postgres\**" />
+    <Content Remove="SqlSchemaMcp.MariaDb\**" />
     <EmbeddedResource Remove="SqlSchemaMcp.Tests\**" />
     <EmbeddedResource Remove="SqlSchemaMcp.Abstractions\**" />
     <EmbeddedResource Remove="SqlSchemaMcp.SqlServer\**" />
+    <EmbeddedResource Remove="SqlSchemaMcp.Postgres\**" />
+    <EmbeddedResource Remove="SqlSchemaMcp.MariaDb\**" />
     <None Remove="SqlSchemaMcp.Tests\**" />
     <None Remove="SqlSchemaMcp.Abstractions\**" />
     <None Remove="SqlSchemaMcp.SqlServer\**" />
+    <None Remove="SqlSchemaMcp.Postgres\**" />
+    <None Remove="SqlSchemaMcp.MariaDb\**" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="SqlSchemaMcp.Abstractions\SqlSchemaMcp.Abstractions.csproj" />
     <ProjectReference Include="SqlSchemaMcp.SqlServer\SqlSchemaMcp.SqlServer.csproj" />
+    <ProjectReference Include="SqlSchemaMcp.Postgres\SqlSchemaMcp.Postgres.csproj" />
+    <ProjectReference Include="SqlSchemaMcp.MariaDb\SqlSchemaMcp.MariaDb.csproj" />
   </ItemGroup>
 
 </Project>

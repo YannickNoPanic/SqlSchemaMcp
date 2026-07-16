@@ -29,16 +29,17 @@ permission gate until those engines provide their own permission probes.
 Read-only is enforced at two independent levels. **The login is the primary defence; the
 in-process validator is defence-in-depth, not a substitute for it.**
 
-### SQL Server today; PostgreSQL/MariaDB later
+### SQL Server, PostgreSQL, and MariaDB
 
-The current implementation is SQL Server-only. SQL Server has both enforcement pieces:
-`SqlServerPermissionProbe` checks login permissions at startup, and `SqlStatementValidator`
-uses ScriptDom to reject non-SELECT statements for `execute_query`.
+SQL Server has both enforcement pieces: `SqlServerPermissionProbe` checks login permissions
+at startup, and `SqlStatementValidator` uses ScriptDom to reject non-SELECT statements for
+`execute_query`.
 
-Future PostgreSQL, MariaDB, or other engines must provide their own read-only permission
-probe and statement guard before row-level tools are enabled for that engine. Until then,
-configured non-SQL Server engines return `UNSUPPORTED:` for tools that do not have a
-capability implementation.
+PostgreSQL and MariaDB currently expose schema browsing and schema snapshot capabilities
+only. They do not expose row-level query execution or data sampling, so no in-process
+statement guard exists for those engines yet. Future PostgreSQL/MariaDB row-level tools must
+provide their own read-only permission probe and statement guard before being enabled.
+Capabilities outside the implemented schema/snapshot slice return `UNSUPPORTED:`.
 
 ### 1. Startup permission gate (primary defence)
 

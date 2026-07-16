@@ -22,6 +22,8 @@
     <ProjectReference Include="..\SqlSchemaMcp.csproj" />
     <ProjectReference Include="..\SqlSchemaMcp.Abstractions\SqlSchemaMcp.Abstractions.csproj" />
     <ProjectReference Include="..\SqlSchemaMcp.SqlServer\SqlSchemaMcp.SqlServer.csproj" />
+    <ProjectReference Include="..\SqlSchemaMcp.Postgres\SqlSchemaMcp.Postgres.csproj" />
+    <ProjectReference Include="..\SqlSchemaMcp.MariaDb\SqlSchemaMcp.MariaDb.csproj" />
   </ItemGroup>
 
 </Project>

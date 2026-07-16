@@ -9,6 +9,12 @@ using SqlSchemaMcp.Auditing;
 using SqlSchemaMcp.Configuration;
 using SqlSchemaMcp.Data;
 using SqlSchemaMcp.Engines;
+using SqlSchemaMcp.MariaDb;
+using SqlSchemaMcp.MariaDb.Configuration;
+using SqlSchemaMcp.MariaDb.Data;
+using SqlSchemaMcp.Postgres;
+using SqlSchemaMcp.Postgres.Configuration;
+using SqlSchemaMcp.Postgres.Data;
 using SqlSchemaMcp.Security;
 using SqlSchemaMcp.SqlServer;
 using SqlSchemaMcp.SqlServer.Configuration;
@@ -178,6 +184,18 @@ static void RegisterServices(IConfiguration configuration, IServiceCollection se
             foreach (var (name, connectionString) in databases.SqlServerConnectionStrings)
                 engineOptions.Databases[name] = connectionString;
         });
+    services.AddOptions<PostgresEngineOptions>()
+        .Configure(engineOptions =>
+        {
+            foreach (var (name, connectionString) in databases.PostgresConnectionStrings)
+                engineOptions.Databases[name] = connectionString;
+        });
+    services.AddOptions<MariaDbEngineOptions>()
+        .Configure(engineOptions =>
+        {
+            foreach (var (name, connectionString) in databases.MariaDbConnectionStrings)
+                engineOptions.Databases[name] = connectionString;
+        });
     services.Configure<SecurityOptions>(configuration.GetSection("Security"));
     services.Configure<AuditOptions>(configuration.GetSection("Audit"));
 
@@ -200,12 +218,20 @@ static void RegisterServices(IConfiguration configuration, IServiceCollection se
     services.AddSingleton<SqlServerSchemaSnapshot>();
     services.AddSingleton<SqlServerCompareSupport>();
     services.AddSingleton<SqlServerEngine>();
+    services.AddSingleton<PostgresSchema>();
+    services.AddSingleton<PostgresSchemaSnapshot>();
+    services.AddSingleton<PostgresEngine>();
+    services.AddSingleton<MariaDbSchema>();
+    services.AddSingleton<MariaDbSchemaSnapshot>();
+    services.AddSingleton<MariaDbEngine>();
     services.AddSingleton<ICapabilityResolver>(sp =>
         new CapabilityResolver(
             databases.All,
             new Dictionary<DatabaseEngine, object>
             {
-                [DatabaseEngine.SqlServer] = sp.GetRequiredService<SqlServerEngine>()
+                [DatabaseEngine.SqlServer] = sp.GetRequiredService<SqlServerEngine>(),
+                [DatabaseEngine.Postgres] = sp.GetRequiredService<PostgresEngine>(),
+                [DatabaseEngine.MariaDb] = sp.GetRequiredService<MariaDbEngine>()
             }));
     services.AddSingleton<IPermissionProbe, SqlServerPermissionProbe>();
     services.AddSingleton<IAuditLog, FileAuditLog>();

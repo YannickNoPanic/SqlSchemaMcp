@@ -4,10 +4,9 @@ A read-only MCP server for SQL Server. It exposes full schema and metadata, and 
 read-only data access for debugging: a validated single-SELECT `execute_query` tool plus
 bounded row sampling and column-distribution tools. It never modifies data or schema.
 
-The runtime now has a capability-based engine boundary for future database engines, but
-SQL Server is still the only concrete implementation in this repository. PostgreSQL,
-MariaDB, or other configured future engines return `UNSUPPORTED:` for tools until their
-engine projects are implemented.
+The runtime has a capability-based engine boundary. SQL Server is the complete engine.
+PostgreSQL and MariaDB currently support schema browsing plus shared snapshot-backed
+analysis; capabilities outside that slice return `UNSUPPORTED:`.
 
 Read-only is enforced on two levels: a startup gate that refuses to run against a login
 with write permissions, and a parser-based allowlist that permits only SELECT/CTE queries.
@@ -142,8 +141,8 @@ docker compose exec sql-schema-mcp cat /data/audit-log.jsonl
 `SqlServer:Databases` is the backward-compatible SQL Server section. A bare string
 connection string means SQL Server and remains the recommended config for current use.
 
-The newer database loader also accepts object-shaped entries inside `SqlServer:Databases`
-for future engines:
+The database loader also accepts object-shaped entries inside `SqlServer:Databases`
+for PostgreSQL and MariaDB:
 
 ```json
 {
@@ -153,20 +152,26 @@ for future engines:
       "reporting": {
         "Engine": "Postgres",
         "ConnectionString": "Host=localhost;Database=Reporting;Username=readonly;Password=YOUR_SECRET"
+      },
+      "legacy": {
+        "Engine": "MariaDb",
+        "ConnectionString": "Server=localhost;Database=Legacy;User ID=readonly;Password=YOUR_SECRET"
       }
     }
   }
 }
 ```
 
-Only SQL Server has an engine project today. Non-SQL Server entries are recognized as
-configured databases, but tools return `UNSUPPORTED:` unless that engine implements the
-specific capability. If you need a missing capability, ask the maintainer to add support
-for that engine.
+SQL Server supports the full tool set. PostgreSQL and MariaDB support the shared schema
+capability and schema snapshot capability, which covers schema browsing and shared analysis
+tools such as naming, missing foreign key, and missing index analysis. SQL Server-only,
+query, data sampling, diagnostics, security, and pipeline tools return `UNSUPPORTED:` for
+PostgreSQL/MariaDB until those engines implement the specific capability. If you need a
+missing capability, ask the maintainer to add support for that engine.
 
 Startup read-only probing is SQL Server-specific. Object-form PostgreSQL or MariaDB entries
-are kept in the resolver so tools can return `UNSUPPORTED:`, but they are not passed to the
-SQL Server permission probe.
+are kept in the resolver and routed to their engine projects, but they are not passed to the
+SQL Server permission probe. Use read-only PostgreSQL/MariaDB credentials.
 
 ### Environment variable overrides
 
