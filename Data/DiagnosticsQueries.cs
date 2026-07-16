@@ -3,11 +3,12 @@ using System.Text;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SqlSchemaMcp.Configuration;
+using SqlSchemaMcp.SqlServer.Configuration;
+using SqlSchemaMcp.SqlServer.Data;
 
 namespace SqlSchemaMcp.Data;
 
-public sealed class DiagnosticsQueries(IOptions<SqlServerOptions> options, ILogger<DiagnosticsQueries> logger)
+public sealed class DiagnosticsQueries(IOptions<SqlServerEngineOptions> options, ILogger<DiagnosticsQueries> logger)
     : SqlQueryBase(options, logger)
 {
     public async Task<string> ListAgentJobs(

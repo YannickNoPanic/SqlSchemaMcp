@@ -18,16 +18,21 @@
   <ItemGroup>
     <Compile Remove="SqlSchemaMcp.Tests\**" />
     <Compile Remove="SqlSchemaMcp.Abstractions\**" />
+    <Compile Remove="SqlSchemaMcp.SqlServer\**" />
     <Content Remove="SqlSchemaMcp.Tests\**" />
     <Content Remove="SqlSchemaMcp.Abstractions\**" />
+    <Content Remove="SqlSchemaMcp.SqlServer\**" />
     <EmbeddedResource Remove="SqlSchemaMcp.Tests\**" />
     <EmbeddedResource Remove="SqlSchemaMcp.Abstractions\**" />
+    <EmbeddedResource Remove="SqlSchemaMcp.SqlServer\**" />
     <None Remove="SqlSchemaMcp.Tests\**" />
     <None Remove="SqlSchemaMcp.Abstractions\**" />
+    <None Remove="SqlSchemaMcp.SqlServer\**" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="SqlSchemaMcp.Abstractions\SqlSchemaMcp.Abstractions.csproj" />
+    <ProjectReference Include="SqlSchemaMcp.SqlServer\SqlSchemaMcp.SqlServer.csproj" />
   </ItemGroup>
 
 </Project>

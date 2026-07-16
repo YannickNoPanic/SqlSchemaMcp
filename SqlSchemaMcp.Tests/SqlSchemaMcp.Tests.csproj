@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SqlSchemaMcp.csproj" />
     <ProjectReference Include="..\SqlSchemaMcp.Abstractions\SqlSchemaMcp.Abstractions.csproj" />
+    <ProjectReference Include="..\SqlSchemaMcp.SqlServer\SqlSchemaMcp.SqlServer.csproj" />
   </ItemGroup>
 
 </Project>

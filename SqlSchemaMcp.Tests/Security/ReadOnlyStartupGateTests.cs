@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using FluentAssertions;
+using SqlSchemaMcp.Abstractions.Security;
 using SqlSchemaMcp.Configuration;
 using SqlSchemaMcp.Security;
 using Xunit;

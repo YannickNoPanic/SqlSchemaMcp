@@ -3,11 +3,12 @@ using System.Text;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SqlSchemaMcp.Configuration;
+using SqlSchemaMcp.SqlServer.Configuration;
+using SqlSchemaMcp.SqlServer.Data;
 
 namespace SqlSchemaMcp.Data;
 
-public sealed class DataQueries(IOptions<SqlServerOptions> options, ILogger<DataQueries> logger)
+public sealed class DataQueries(IOptions<SqlServerEngineOptions> options, ILogger<DataQueries> logger)
     : SqlQueryBase(options, logger)
 {
     public async Task<string> SampleTableData(

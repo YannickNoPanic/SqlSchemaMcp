@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SqlSchemaMcp.Abstractions.Security;
 using SqlSchemaMcp.Configuration;
 
 namespace SqlSchemaMcp.Security;

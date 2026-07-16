@@ -3,11 +3,12 @@ using System.Text;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SqlSchemaMcp.Configuration;
+using SqlSchemaMcp.SqlServer.Configuration;
+using SqlSchemaMcp.SqlServer.Data;
 
 namespace SqlSchemaMcp.Data;
 
-public sealed class AnalysisQueries(IOptions<SqlServerOptions> options, ILogger<AnalysisQueries> logger)
+public sealed class AnalysisQueries(IOptions<SqlServerEngineOptions> options, ILogger<AnalysisQueries> logger)
     : SqlQueryBase(options, logger)
 {
     public async Task<string> AnalyzeNamingConventions(

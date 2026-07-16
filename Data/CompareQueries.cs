@@ -3,11 +3,12 @@ using System.Text;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SqlSchemaMcp.Configuration;
+using SqlSchemaMcp.SqlServer.Configuration;
+using SqlSchemaMcp.SqlServer.Data;
 
 namespace SqlSchemaMcp.Data;
 
-public sealed class CompareQueries(IOptions<SqlServerOptions> options, ILogger<CompareQueries> logger)
+public sealed class CompareQueries(IOptions<SqlServerEngineOptions> options, ILogger<CompareQueries> logger)
     : SqlQueryBase(options, logger)
 {
     public async Task<HashSet<string>> GetTableNames(

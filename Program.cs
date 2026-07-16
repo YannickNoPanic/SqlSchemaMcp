@@ -3,10 +3,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SqlSchemaMcp.Abstractions.Security;
 using SqlSchemaMcp.Auditing;
 using SqlSchemaMcp.Configuration;
 using SqlSchemaMcp.Data;
 using SqlSchemaMcp.Security;
+using SqlSchemaMcp.SqlServer.Configuration;
+using SqlSchemaMcp.SqlServer.Security;
 using SqlSchemaMcp.Tools;
 
 bool useSse = args.Contains("--sse");
@@ -158,6 +161,12 @@ else
 static void RegisterServices(IConfiguration configuration, IServiceCollection services)
 {
     services.Configure<SqlServerOptions>(configuration.GetSection("SqlServer"));
+    services.AddOptions<SqlServerEngineOptions>()
+        .Configure<IOptions<SqlServerOptions>>((engineOptions, hostOptions) =>
+        {
+            foreach (var (name, connectionString) in hostOptions.Value.Databases)
+                engineOptions.Databases[name] = connectionString;
+        });
     services.Configure<SecurityOptions>(configuration.GetSection("Security"));
     services.Configure<AuditOptions>(configuration.GetSection("Audit"));
 

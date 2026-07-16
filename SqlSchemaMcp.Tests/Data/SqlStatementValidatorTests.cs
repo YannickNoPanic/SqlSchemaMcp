@@ -1,5 +1,5 @@
 using FluentAssertions;
-using SqlSchemaMcp.Data;
+using SqlSchemaMcp.SqlServer.Data;
 using Xunit;
 
 namespace SqlSchemaMcp.Tests.Data;

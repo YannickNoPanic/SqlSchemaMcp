@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
-namespace SqlSchemaMcp.Data;
+namespace SqlSchemaMcp.SqlServer.Data;
 
 /// <summary>
 /// Allowlist validator for the execute_query tool. Parses the statement with the

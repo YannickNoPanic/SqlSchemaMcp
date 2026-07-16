@@ -5,11 +5,11 @@ using System.Text.RegularExpressions;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SqlSchemaMcp.Configuration;
+using SqlSchemaMcp.SqlServer.Configuration;
 
-namespace SqlSchemaMcp.Data;
+namespace SqlSchemaMcp.SqlServer.Data;
 
-public abstract partial class SqlQueryBase(IOptions<SqlServerOptions> options, ILogger logger)
+public abstract partial class SqlQueryBase(IOptions<SqlServerEngineOptions> options, ILogger logger)
 {
     protected readonly Dictionary<string, string> _databases = options.Value.Databases;
 

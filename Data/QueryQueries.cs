@@ -3,11 +3,12 @@ using System.Text;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SqlSchemaMcp.Configuration;
+using SqlSchemaMcp.SqlServer.Configuration;
+using SqlSchemaMcp.SqlServer.Data;
 
 namespace SqlSchemaMcp.Data;
 
-public sealed class QueryQueries(IOptions<SqlServerOptions> options, ILogger<QueryQueries> logger)
+public sealed class QueryQueries(IOptions<SqlServerEngineOptions> options, ILogger<QueryQueries> logger)
     : SqlQueryBase(options, logger)
 {
     private const int MaxRows = 500;

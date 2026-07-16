@@ -3,11 +3,12 @@ using System.Text;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SqlSchemaMcp.Configuration;
+using SqlSchemaMcp.SqlServer.Configuration;
+using SqlSchemaMcp.SqlServer.Data;
 
 namespace SqlSchemaMcp.Data;
 
-public sealed class PipelineQueries(IOptions<SqlServerOptions> options, ILogger<PipelineQueries> logger)
+public sealed class PipelineQueries(IOptions<SqlServerEngineOptions> options, ILogger<PipelineQueries> logger)
     : SqlQueryBase(options, logger)
 {
     public async Task<string> ListDataFeeds(

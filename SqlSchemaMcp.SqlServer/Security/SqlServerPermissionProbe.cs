@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
+using SqlSchemaMcp.Abstractions.Security;
 
-namespace SqlSchemaMcp.Security;
+namespace SqlSchemaMcp.SqlServer.Security;
 
 /// <summary>
 /// Probes a login's effective write capability. A login is considered writable if it is a

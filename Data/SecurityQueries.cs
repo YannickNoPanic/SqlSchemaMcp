@@ -3,11 +3,12 @@ using System.Text;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SqlSchemaMcp.Configuration;
+using SqlSchemaMcp.SqlServer.Configuration;
+using SqlSchemaMcp.SqlServer.Data;
 
 namespace SqlSchemaMcp.Data;
 
-public sealed class SecurityQueries(IOptions<SqlServerOptions> options, ILogger<SecurityQueries> logger)
+public sealed class SecurityQueries(IOptions<SqlServerEngineOptions> options, ILogger<SecurityQueries> logger)
     : SqlQueryBase(options, logger)
 {
     public async Task<string> ListDatabaseUsers(

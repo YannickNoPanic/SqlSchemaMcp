@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SqlSchemaMcp.Security;
+namespace SqlSchemaMcp.Abstractions.Security;
 
 public sealed record LoginPermissionResult(
     string Database,
