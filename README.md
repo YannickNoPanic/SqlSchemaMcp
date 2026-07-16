@@ -142,18 +142,18 @@ docker compose exec sql-schema-mcp cat /data/audit-log.jsonl
 `SqlServer:Databases` is the backward-compatible SQL Server section. A bare string
 connection string means SQL Server and remains the recommended config for current use.
 
-The newer database loader also accepts object-shaped entries for future engines:
+The newer database loader also accepts object-shaped entries inside `SqlServer:Databases`
+for future engines:
 
 ```json
 {
-  "Databases": {
-    "poc": {
-      "Engine": "SqlServer",
-      "ConnectionString": "Server=localhost;Database=PocDb;User Id=sqlschema_ro;Password=YOUR_SECRET;TrustServerCertificate=true;"
-    },
-    "reporting": {
-      "Engine": "Postgres",
-      "ConnectionString": "Host=localhost;Database=Reporting;Username=readonly;Password=YOUR_SECRET"
+  "SqlServer": {
+    "Databases": {
+      "poc": "Server=localhost;Database=PocDb;User Id=sqlschema_ro;Password=YOUR_SECRET;TrustServerCertificate=true;",
+      "reporting": {
+        "Engine": "Postgres",
+        "ConnectionString": "Host=localhost;Database=Reporting;Username=readonly;Password=YOUR_SECRET"
+      }
     }
   }
 }
