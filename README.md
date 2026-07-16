@@ -4,6 +4,11 @@ A read-only MCP server for SQL Server. It exposes full schema and metadata, and 
 read-only data access for debugging: a validated single-SELECT `execute_query` tool plus
 bounded row sampling and column-distribution tools. It never modifies data or schema.
 
+The runtime now has a capability-based engine boundary for future database engines, but
+SQL Server is still the only concrete implementation in this repository. PostgreSQL,
+MariaDB, or other configured future engines return `UNSUPPORTED:` for tools until their
+engine projects are implemented.
+
 Read-only is enforced on two levels: a startup gate that refuses to run against a login
 with write permissions, and a parser-based allowlist that permits only SELECT/CTE queries.
 See docs/security-posture.md before installing.
@@ -131,6 +136,33 @@ docker compose exec sql-schema-mcp cat /data/audit-log.jsonl
 ```
 
 `appsettings.json` is gitignored. Copy from `appsettings.example.json` to get started.
+
+### Multi-engine config semantics
+
+`SqlServer:Databases` is the backward-compatible SQL Server section. A bare string
+connection string means SQL Server and remains the recommended config for current use.
+
+The newer database loader also accepts object-shaped entries for future engines:
+
+```json
+{
+  "Databases": {
+    "poc": {
+      "Engine": "SqlServer",
+      "ConnectionString": "Server=localhost;Database=PocDb;User Id=sqlschema_ro;Password=YOUR_SECRET;TrustServerCertificate=true;"
+    },
+    "reporting": {
+      "Engine": "Postgres",
+      "ConnectionString": "Host=localhost;Database=Reporting;Username=readonly;Password=YOUR_SECRET"
+    }
+  }
+}
+```
+
+Only SQL Server has an engine project today. Non-SQL Server entries are recognized as
+configured databases, but tools return `UNSUPPORTED:` unless that engine implements the
+specific capability. If you need a missing capability, ask the maintainer to add support
+for that engine.
 
 ### Environment variable overrides
 
