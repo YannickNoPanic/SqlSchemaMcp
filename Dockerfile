@@ -16,10 +16,8 @@ RUN apt-get update \
 COPY --from=build /app/publish .
 COPY appsettings.example.json ./appsettings.json
 
-# Non-secret defaults only. Real connection strings and the port are injected as
-# SQLMCP_-prefixed environment variables at `docker run` / compose time (see
-# docker-compose.yml and .env.example) — never baked into the image.
-ENV SQLMCP_Mcp__BindAddress=0.0.0.0
+# Non-secret defaults only. Real connection strings and deployment overrides are injected
+# from .env via docker compose. Never bake server names or secrets into the image.
 
 EXPOSE 5101
 

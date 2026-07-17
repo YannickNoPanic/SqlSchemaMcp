@@ -20,7 +20,7 @@ complexity analysis, pipeline health, and migration planning.
 ## Quick Start (stdio — recommended)
 
 1. Clone the repo
-2. Copy `appsettings.example.json` to `appsettings.json` and fill in your connection strings
+2. Copy `.env.example` to `.env` and fill in your database connection strings
 3. Add the server to `~/.claude.json` (see below)
 4. Claude Code starts the process automatically — or run `dotnet run` from the repo root manually
 
@@ -77,19 +77,14 @@ work this is not an issue; for constraint writes prefer HTTP mode.
 ### Running HTTP mode with Docker
 
 ```bash
-cp .env.example .env    # fill in real connection strings, and MCP_PORT if 5101 is taken
+cp .env.example .env    # fill in real connection strings and deployment overrides
 docker compose up -d --build
 ```
 
-The port is fully configurable via `MCP_PORT` in `.env` — it drives both the published host
-port and the server's internal `Mcp:Port`, so the two never drift apart.
-
-`poc` and `azure` in `docker-compose.yml`/`.env.example` are just example database keys, not
-fixed names — rename them or add more by adding another `SQLMCP_SqlServer__Databases__<yourkey>`
-line plus its own connection-string env var. If your login has write permissions and you
-accept that risk, set `SQLMCP_ALLOW_WRITABLE_LOGIN=true` in `.env` instead of editing code.
-The connection-string env var value must be the raw SQL Server connection string only, for example
-`Server=...;Database=...;Encrypt=true;...`. Do not include another `NAME=` prefix inside the value.
+`docker-compose.yml` contains only container wiring: build, `env_file`, ports, volume, network,
+and restart policy. Database keys, connection strings, audit overrides, and security overrides
+belong in `.env`, not in compose. For Docker, keep `SQLMCP_Mcp__BindAddress=0.0.0.0` in `.env`
+so the container port is reachable.
 
 Confirm it's up:
 
@@ -99,7 +94,7 @@ curl http://localhost:5101/
 ```
 
 Point Claude Code at it the same way as any other HTTP-mode server (see below), using
-`http://<host>:<MCP_PORT>/`. This binds the container to `0.0.0.0` internally; only publish
+`http://<host>:<SQLMCP_Mcp__Port>/`. This binds the container to `0.0.0.0` internally; only publish
 the port to a network you control (VPN/firewall) — there is no application-level
 authentication on this transport yet.
 
@@ -142,6 +137,24 @@ docker compose exec sql-schema-mcp cat /data/audit-log.jsonl
 
 ## Configuration
 
+### Configuration ownership
+
+Use one place per kind of setting:
+
+| File | Owns |
+|------|------|
+| `.env` | Real database entries, connection strings, secrets, and deployment overrides |
+| `appsettings.json` | Optional local app defaults when you do not want to use `.env` |
+| `docker-compose.yml` | Container wiring only: build, env file, ports, volumes, networks |
+| `appsettings.example.json` | Non-secret default shape for the application |
+
+Configuration precedence is: appsettings defaults, then `.env`, then real process environment
+variables. Environment variables win over `.env`; `.env` wins over appsettings.
+
+The app loads the nearest `.env` from the current working directory or the application base
+directory and maps `SQLMCP_` variables into .NET configuration. For example,
+`SQLMCP_Mcp__Port=5101` becomes `Mcp:Port`.
+
 ### appsettings.json
 
 ```json
@@ -151,40 +164,30 @@ docker compose exec sql-schema-mcp cat /data/audit-log.jsonl
     "BindAddress": "localhost"
   },
   "SqlServer": {
-    "Databases": {
-      "poc":   "Server=localhost;Database=PocDb;Trusted_Connection=true;TrustServerCertificate=true;",
-      "azure": "Server=myserver.database.windows.net;Database=AzureDb;Authentication=Active Directory Default;"
-    }
+    "Databases": {}
   }
 }
 ```
 
-`appsettings.json` is gitignored. Copy from `appsettings.example.json` to get started.
+`appsettings.json` is gitignored. It is useful for local non-secret defaults, but normal setup
+uses `.env` for database connection details.
 
 ### Multi-engine config semantics
 
 `SqlServer:Databases` is the backward-compatible SQL Server section. A bare string
 connection string means SQL Server and remains the recommended config for current use.
 
-The database loader also accepts object-shaped entries inside `SqlServer:Databases`
-for PostgreSQL and MariaDB:
+The database loader also accepts object-shaped entries for PostgreSQL and MariaDB. In `.env`,
+use `__Engine` and `__ConnectionString`:
 
-```json
-{
-  "SqlServer": {
-    "Databases": {
-      "poc": "Server=localhost;Database=PocDb;User Id=sqlschema_ro;Password=YOUR_SECRET;TrustServerCertificate=true;",
-      "reporting": {
-        "Engine": "Postgres",
-        "ConnectionString": "Host=localhost;Database=Reporting;Username=readonly;Password=YOUR_SECRET"
-      },
-      "legacy": {
-        "Engine": "MariaDb",
-        "ConnectionString": "Server=localhost;Database=Legacy;User ID=readonly;Password=YOUR_SECRET"
-      }
-    }
-  }
-}
+```env
+SQLMCP_SqlServer__Databases__poc=Server=localhost;Database=PocDb;User Id=sqlschema_ro;Password=YOUR_SECRET;TrustServerCertificate=true;
+
+SQLMCP_SqlServer__Databases__reporting__Engine=Postgres
+SQLMCP_SqlServer__Databases__reporting__ConnectionString=Host=localhost;Database=Reporting;Username=readonly;Password=YOUR_SECRET
+
+SQLMCP_SqlServer__Databases__legacy__Engine=MariaDb
+SQLMCP_SqlServer__Databases__legacy__ConnectionString=Server=localhost;Database=Legacy;User ID=readonly;Password=YOUR_SECRET
 ```
 
 SQL Server supports the full tool set. PostgreSQL and MariaDB support the shared schema
@@ -204,23 +207,25 @@ Startup read-only probing is SQL Server-specific. Object-form PostgreSQL or Mari
 are kept in the resolver and routed to their engine projects, but they are not passed to the
 SQL Server permission probe. Use read-only PostgreSQL/MariaDB credentials.
 
-### Environment variable overrides
+### `.env` and environment variables
 
-These env vars are read by `Program.cs` with prefix `SQLMCP_` and override any value in
-`appsettings.json`. They work in both stdio and HTTP mode.
+These values are read from `.env` and from real environment variables with prefix `SQLMCP_`.
+They work in both stdio and HTTP mode.
 
 | Variable | Description |
 |----------|-------------|
-| `SQLMCP_SqlServer__Databases__poc` | Override the `poc` connection string |
-| `SQLMCP_SqlServer__Databases__azure` | Override the `azure` connection string |
-| `SQLMCP_Mcp__Port` | Override the HTTP port (HTTP mode only) |
-| `SQLMCP_Mcp__BindAddress` | Override the HTTP bind address (use `0.0.0.0` inside a container) |
-| `SQLMCP_Security__VerifyLoginsAtStartup` | Override `Security:VerifyLoginsAtStartup` |
-| `SQLMCP_Security__AllowWritableLogin` | Override `Security:AllowWritableLogin` |
-| `SQLMCP_Audit__Enabled` | Override `Audit:Enabled` |
-| `SQLMCP_Audit__Path` | Override `Audit:Path` |
+| `SQLMCP_SqlServer__Databases__<key>` | SQL Server connection string for `<key>` |
+| `SQLMCP_SqlServer__Databases__<key>__Engine` | Engine for object-shaped entries: `Postgres` or `MariaDb` |
+| `SQLMCP_SqlServer__Databases__<key>__ConnectionString` | Connection string for object-shaped entries |
+| `SQLMCP_Mcp__Port` | HTTP port (HTTP mode only) |
+| `SQLMCP_Mcp__BindAddress` | HTTP bind address (use `0.0.0.0` inside a container) |
+| `SQLMCP_Security__VerifyLoginsAtStartup` | Startup permission gate toggle |
+| `SQLMCP_Security__AllowWritableLogin` | Explicit writable-login escape hatch |
+| `SQLMCP_Audit__Enabled` | Audit log toggle |
+| `SQLMCP_Audit__Path` | Audit log path |
 
-The `__` separator maps to nested JSON keys. Add any database name you configure in appsettings.
+The `__` separator maps to nested JSON keys. Add database names in `.env`, not in
+`docker-compose.yml`.
 Connection-string values must be raw connection strings. If startup reports
 `Keyword not supported: 'sqlmcp_azure_connection_string'`, the configured value contains an
 environment-variable assignment instead of just the SQL Server connection string.
@@ -232,8 +237,8 @@ environment-variable assignment instead of just the SQL Server connection string
 This server is read-only by design, enforced at two levels rather than by convention alone:
 
 - **Startup gate** — on launch, every configured SQL Server database login is probed for write
-  permissions. If any login can write, the server refuses to start (`Security:VerifyLoginsAtStartup`,
-  default `true`; escape hatch `Security:AllowWritableLogin`, default `false`).
+  permissions. See `docs/security-posture.md` for the writable-login policy and the two settings
+  that control it.
 - **Statement allowlist** — `execute_query` parses every statement with the T-SQL parser and
   permits only a single SELECT or CTE. Writes, DDL, `EXEC`, `OPENQUERY`/`OPENROWSET`/`OPENDATASOURCE`,
   `SELECT ... INTO`, and multi-statement batches are all rejected.

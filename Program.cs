@@ -29,6 +29,9 @@ if (useSse)
     var builder = WebApplication.CreateBuilder(args);
 
     builder.Configuration.SetBasePath(AppContext.BaseDirectory);
+    builder.Configuration.AddInMemoryCollection(DotEnvConfiguration.LoadNearest(
+        Directory.GetCurrentDirectory(),
+        AppContext.BaseDirectory));
     builder.Configuration.AddEnvironmentVariables(prefix: "SQLMCP_");
 
     RegisterServices(builder.Configuration, builder.Services);
@@ -138,6 +141,9 @@ else
     var builder = Host.CreateApplicationBuilder(args);
 
     builder.Configuration.SetBasePath(AppContext.BaseDirectory);
+    builder.Configuration.AddInMemoryCollection(DotEnvConfiguration.LoadNearest(
+        Directory.GetCurrentDirectory(),
+        AppContext.BaseDirectory));
     builder.Configuration.AddEnvironmentVariables(prefix: "SQLMCP_");
 
     builder.Logging.AddConsole(opts => opts.LogToStandardErrorThreshold = LogLevel.Trace);

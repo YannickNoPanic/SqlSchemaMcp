@@ -183,8 +183,8 @@ that, and neither is solved by application code today:
   would let the audit log attribute calls to a person and let access be revoked per-user
   without redeploying the whole instance.
 - **Azure Key Vault + Managed Identity for server secrets.** Connection strings and other
-  secrets currently arrive as plain `SQLMCP_`-prefixed environment variables via `.env` and
-  docker compose. That's adequate for a small team on a controlled server, but it isn't
+  secrets currently arrive as plain `SQLMCP_`-prefixed settings from `.env` or the process
+  environment. That's adequate for a small team on a controlled server, but it isn't
   centrally rotatable or auditable the way a secret store is.
 - **Fix the hardcoded `localhost` in the OAuth discovery endpoints.** `Program.cs` builds the
   `resource`, `issuer`, `authorization_endpoint`, `token_endpoint`, and `registration_endpoint`
