@@ -1,5 +1,6 @@
 using System.Text;
 using Npgsql;
+using NpgsqlTypes;
 
 namespace SqlSchemaMcp.Postgres.Data;
 
@@ -26,8 +27,8 @@ public sealed partial class PostgresSchema
         {
             await using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("tableType", tableType);
-            cmd.Parameters.AddWithValue("schemaFilter", (object?)schemaFilter ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("nameFilter", (object?)nameFilter ?? DBNull.Value);
+            cmd.Parameters.Add("schemaFilter", NpgsqlDbType.Text).Value = (object?)schemaFilter ?? DBNull.Value;
+            cmd.Parameters.Add("nameFilter", NpgsqlDbType.Text).Value = (object?)nameFilter ?? DBNull.Value;
             return await ReadNameList(database, title, cmd, ct);
         }
         catch (Exception ex)
@@ -56,7 +57,7 @@ public sealed partial class PostgresSchema
         {
             await using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("routineType", routineType);
-            cmd.Parameters.AddWithValue("nameFilter", (object?)nameFilter ?? DBNull.Value);
+            cmd.Parameters.Add("nameFilter", NpgsqlDbType.Text).Value = (object?)nameFilter ?? DBNull.Value;
             return await ReadNameList(database, title, cmd, ct);
         }
         catch (Exception ex)

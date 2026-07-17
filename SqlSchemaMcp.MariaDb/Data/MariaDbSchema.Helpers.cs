@@ -24,8 +24,8 @@ public sealed partial class MariaDbSchema
         {
             await using var cmd = new MySqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@tableType", tableType);
-            cmd.Parameters.AddWithValue("@schemaFilter", (object?)schemaFilter ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@nameFilter", (object?)nameFilter ?? DBNull.Value);
+            cmd.Parameters.Add("@schemaFilter", MySqlDbType.VarChar).Value = (object?)schemaFilter ?? DBNull.Value;
+            cmd.Parameters.Add("@nameFilter", MySqlDbType.VarChar).Value = (object?)nameFilter ?? DBNull.Value;
             return await ReadNameList(database, title, cmd, ct);
         }
         catch (Exception ex)
@@ -53,7 +53,7 @@ public sealed partial class MariaDbSchema
         {
             await using var cmd = new MySqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@routineType", routineType);
-            cmd.Parameters.AddWithValue("@nameFilter", (object?)nameFilter ?? DBNull.Value);
+            cmd.Parameters.Add("@nameFilter", MySqlDbType.VarChar).Value = (object?)nameFilter ?? DBNull.Value;
             return await ReadNameList(database, title, cmd, ct);
         }
         catch (Exception ex)
@@ -104,7 +104,7 @@ public sealed partial class MariaDbSchema
         try
         {
             await using var cmd = new MySqlCommand(sql, conn);
-            cmd.Parameters.AddWithValue("@schema", (object?)schema ?? DBNull.Value);
+            cmd.Parameters.Add("@schema", MySqlDbType.VarChar).Value = (object?)schema ?? DBNull.Value;
             cmd.Parameters.AddWithValue("@name", name);
             cmd.Parameters.AddWithValue("@routineType", routineType);
             var result = await cmd.ExecuteScalarAsync(ct);
@@ -124,7 +124,7 @@ public sealed partial class MariaDbSchema
         sb.AppendLine("FOREIGN KEYS");
         sb.AppendLine(new string('-', 90));
         await using var cmd = new MySqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@schema", (object?)schema ?? DBNull.Value);
+        cmd.Parameters.Add("@schema", MySqlDbType.VarChar).Value = (object?)schema ?? DBNull.Value;
         cmd.Parameters.AddWithValue("@table", table);
         await using var reader = await cmd.ExecuteReaderAsync(ct);
         bool any = false;
@@ -145,7 +145,7 @@ public sealed partial class MariaDbSchema
         sb.AppendLine("INDEXES");
         sb.AppendLine(new string('-', 90));
         await using var cmd = new MySqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@schema", (object?)schema ?? DBNull.Value);
+        cmd.Parameters.Add("@schema", MySqlDbType.VarChar).Value = (object?)schema ?? DBNull.Value;
         cmd.Parameters.AddWithValue("@table", table);
         await using var reader = await cmd.ExecuteReaderAsync(ct);
         bool any = false;
