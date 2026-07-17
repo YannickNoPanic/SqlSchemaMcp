@@ -43,7 +43,7 @@ public sealed class DataQueries(ICapabilityResolver resolver)
 
         return Task.FromResult(
             resolver.TryGetEngine(database, out var engine)
-                ? Sentinels.Unsupported(toolName, engine)
+                ? Sentinels.Unsupported(toolName, engine, nameof(IDataSamplingCapability))
                 : Sentinels.UnknownDatabase(resolver.DatabaseNames, database));
     }
 }

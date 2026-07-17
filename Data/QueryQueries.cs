@@ -15,7 +15,7 @@ public sealed class QueryQueries(ICapabilityResolver resolver)
 
         return Task.FromResult(
             resolver.TryGetEngine(database, out var engine)
-                ? Sentinels.Unsupported(nameof(ExecuteQuery), engine)
+                ? Sentinels.Unsupported(nameof(ExecuteQuery), engine, nameof(IReadOnlyQueryCapability))
                 : Sentinels.UnknownDatabase(resolver.DatabaseNames, database));
     }
 }

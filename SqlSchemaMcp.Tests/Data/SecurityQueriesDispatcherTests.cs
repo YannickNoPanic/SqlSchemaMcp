@@ -28,7 +28,7 @@ public sealed class SecurityQueriesDispatcherTests
 
         var result = await sut.ListDatabaseUsers("poc", CancellationToken.None);
 
-        result.Should().Be("UNSUPPORTED: Tool 'ListDatabaseUsers' is not available for engine 'Postgres'. Ask the maintainer to add support if you need this.");
+        result.Should().Be("UNSUPPORTED: Tool 'ListDatabaseUsers' is not available for engine 'Postgres'. Ask the developer to add 'ISqlServerSecurityCapability' support for this engine.");
     }
 
     private static SecurityQueries CreateSut(DatabaseEngine engine, object implementation)

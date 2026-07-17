@@ -29,7 +29,7 @@ public sealed class QueryQueriesDispatcherTests
 
         var result = await sut.ExecuteQuery("analytics", "SELECT 1", CancellationToken.None);
 
-        result.Should().Be("UNSUPPORTED: Tool 'ExecuteQuery' is not available for engine 'Postgres'. Ask the maintainer to add support if you need this.");
+        result.Should().Be("UNSUPPORTED: Tool 'ExecuteQuery' is not available for engine 'Postgres'. Ask the developer to add 'IReadOnlyQueryCapability' support for this engine.");
     }
 
     [Fact]

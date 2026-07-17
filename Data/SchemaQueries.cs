@@ -109,7 +109,7 @@ public sealed class SchemaQueries(ICapabilityResolver resolver)
         if (resolver.TryResolve<ISchemaCapability>(database, out _, out var capability) && capability is not null)
             return execute(capability);
 
-        return UnsupportedOrUnknown(database, toolName);
+        return UnsupportedOrUnknown(database, toolName, nameof(ISchemaCapability));
     }
 
     private Task<string> ResolveExtras(
@@ -120,12 +120,12 @@ public sealed class SchemaQueries(ICapabilityResolver resolver)
         if (resolver.TryResolve<ISqlServerSchemaExtrasCapability>(database, out _, out var capability) && capability is not null)
             return execute(capability);
 
-        return UnsupportedOrUnknown(database, toolName);
+        return UnsupportedOrUnknown(database, toolName, nameof(ISqlServerSchemaExtrasCapability));
     }
 
-    private Task<string> UnsupportedOrUnknown(string database, string toolName) =>
+    private Task<string> UnsupportedOrUnknown(string database, string toolName, string capabilityName) =>
         Task.FromResult(
             resolver.TryGetEngine(database, out var engine)
-                ? Sentinels.Unsupported(toolName, engine)
+                ? Sentinels.Unsupported(toolName, engine, capabilityName)
                 : Sentinels.UnknownDatabase(resolver.DatabaseNames, database));
 }

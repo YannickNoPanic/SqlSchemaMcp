@@ -48,7 +48,8 @@ if (useSse)
         .WithTools<DiagnosticsTools>()
         .WithTools<DataTools>()
         .WithTools<SecurityTools>()
-        .WithTools<QueryTools>();
+        .WithTools<QueryTools>()
+        .WithTools<RuntimeTools>();
 
     var app = builder.Build();
 
@@ -154,7 +155,8 @@ else
         .WithTools<DiagnosticsTools>()
         .WithTools<DataTools>()
         .WithTools<SecurityTools>()
-        .WithTools<QueryTools>();
+        .WithTools<QueryTools>()
+        .WithTools<RuntimeTools>();
 
     Console.Error.WriteLine("[SqlSchemaMcp] Stdio mode gestart");
     var host = builder.Build();
@@ -207,6 +209,7 @@ static void RegisterServices(IConfiguration configuration, IServiceCollection se
     services.AddSingleton<DataQueries>();
     services.AddSingleton<SecurityQueries>();
     services.AddSingleton<QueryQueries>();
+    services.AddSingleton<RuntimeQueries>();
     services.AddSingleton<SqlServerQuery>();
     services.AddSingleton<SqlServerSchema>();
     services.AddSingleton<SqlServerSchemaExtras>();

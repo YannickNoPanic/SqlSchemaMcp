@@ -39,7 +39,8 @@ PostgreSQL and MariaDB currently expose schema browsing and schema snapshot capa
 only. They do not expose row-level query execution or data sampling, so no in-process
 statement guard exists for those engines yet. Future PostgreSQL/MariaDB row-level tools must
 provide their own read-only permission probe and statement guard before being enabled.
-Capabilities outside the implemented schema/snapshot slice return `UNSUPPORTED:`.
+Capabilities outside the implemented schema/snapshot slice return `UNSUPPORTED:` with the
+missing capability contract so the user can ask a developer for the exact engine support needed.
 
 ### 1. Startup permission gate (primary defence)
 

@@ -25,7 +25,7 @@ public sealed class PipelineQueries(ICapabilityResolver resolver)
 
         return Task.FromResult(
             resolver.TryGetEngine(database, out var engine)
-                ? Sentinels.Unsupported(toolName, engine)
+                ? Sentinels.Unsupported(toolName, engine, nameof(ISqlServerPipelineCapability))
                 : Sentinels.UnknownDatabase(resolver.DatabaseNames, database));
     }
 }

@@ -28,7 +28,7 @@ public sealed class PipelineQueriesDispatcherTests
 
         var result = await sut.ListDataFeeds("poc", CancellationToken.None);
 
-        result.Should().Be("UNSUPPORTED: Tool 'ListDataFeeds' is not available for engine 'Postgres'. Ask the maintainer to add support if you need this.");
+        result.Should().Be("UNSUPPORTED: Tool 'ListDataFeeds' is not available for engine 'Postgres'. Ask the developer to add 'ISqlServerPipelineCapability' support for this engine.");
     }
 
     private static PipelineQueries CreateSut(DatabaseEngine engine, object implementation)

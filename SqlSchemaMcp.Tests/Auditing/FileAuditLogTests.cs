@@ -51,7 +51,7 @@ public sealed class FileAuditLogTests : IDisposable
             "AnalyzeWaitStats",
             "reporting",
             "",
-            () => Task.FromResult("UNSUPPORTED: Tool 'AnalyzeWaitStats' is not available for engine 'Postgres'. Ask the maintainer to add support if you need this."));
+            () => Task.FromResult("UNSUPPORTED: Tool 'AnalyzeWaitStats' is not available for engine 'Postgres'. Ask the developer to add 'ISqlServerDiagnosticsCapability' support for this engine."));
 
         result.Should().StartWith("UNSUPPORTED:");
 

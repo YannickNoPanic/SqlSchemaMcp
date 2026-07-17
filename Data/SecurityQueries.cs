@@ -18,7 +18,7 @@ public sealed class SecurityQueries(ICapabilityResolver resolver)
 
         return Task.FromResult(
             resolver.TryGetEngine(database, out var engine)
-                ? Sentinels.Unsupported(toolName, engine)
+                ? Sentinels.Unsupported(toolName, engine, nameof(ISqlServerSecurityCapability))
                 : Sentinels.UnknownDatabase(resolver.DatabaseNames, database));
     }
 }

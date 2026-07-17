@@ -31,7 +31,7 @@ public sealed class AnalysisQueriesSqlServerOnlyDispatcherTests
 
         var result = await sut.AnalyzeDuplicateIndexes("poc", CancellationToken.None);
 
-        result.Should().Be("UNSUPPORTED: Tool 'AnalyzeDuplicateIndexes' is not available for engine 'Postgres'. Ask the maintainer to add support if you need this.");
+        result.Should().Be("UNSUPPORTED: Tool 'AnalyzeDuplicateIndexes' is not available for engine 'Postgres'. Ask the developer to add 'ISqlServerAnalysisCapability' support for this engine.");
     }
 
     [Fact]

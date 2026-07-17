@@ -39,7 +39,7 @@ public sealed class DiagnosticsQueriesDispatcherTests
 
         var result = await sut.ListAgentJobs("poc", CancellationToken.None);
 
-        result.Should().Be("UNSUPPORTED: Tool 'ListAgentJobs' is not available for engine 'Postgres'. Ask the maintainer to add support if you need this.");
+        result.Should().Be("UNSUPPORTED: Tool 'ListAgentJobs' is not available for engine 'Postgres'. Ask the developer to add 'ISqlServerDiagnosticsCapability' support for this engine.");
     }
 
     [Fact]
@@ -49,7 +49,7 @@ public sealed class DiagnosticsQueriesDispatcherTests
 
         var result = await sut.AnalyzeWaitStats("poc", CancellationToken.None);
 
-        result.Should().Be("UNSUPPORTED: Tool 'AnalyzeWaitStats' is not available for engine 'Postgres'. Ask the maintainer to add support if you need this.");
+        result.Should().Be("UNSUPPORTED: Tool 'AnalyzeWaitStats' is not available for engine 'Postgres'. Ask the developer to add 'ISqlServerDiagnosticsCapability' support for this engine.");
     }
 
     private static DiagnosticsQueries CreateSut(DatabaseEngine engine, object implementation)

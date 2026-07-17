@@ -39,7 +39,7 @@ public sealed class DiagnosticsQueries(ICapabilityResolver resolver)
 
         return Task.FromResult(
             resolver.TryGetEngine(database, out var engine)
-                ? Sentinels.Unsupported(toolName, engine)
+                ? Sentinels.Unsupported(toolName, engine, nameof(ISqlServerDiagnosticsCapability))
                 : Sentinels.UnknownDatabase(resolver.DatabaseNames, database));
     }
 }

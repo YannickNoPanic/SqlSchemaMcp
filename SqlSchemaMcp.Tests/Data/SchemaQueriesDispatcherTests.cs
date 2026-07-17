@@ -42,7 +42,7 @@ public sealed class SchemaQueriesDispatcherTests
 
         var result = await sut.ListTriggers("poc", "audit", CancellationToken.None);
 
-        result.Should().Be("UNSUPPORTED: Tool 'ListTriggers' is not available for engine 'Postgres'. Ask the maintainer to add support if you need this.");
+        result.Should().Be("UNSUPPORTED: Tool 'ListTriggers' is not available for engine 'Postgres'. Ask the developer to add 'ISqlServerSchemaExtrasCapability' support for this engine.");
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public sealed class SchemaQueriesDispatcherTests
 
         var result = await sut.ListTables("poc", null, null, CancellationToken.None);
 
-        result.Should().Be("UNSUPPORTED: Tool 'ListTables' is not available for engine 'Postgres'. Ask the maintainer to add support if you need this.");
+        result.Should().Be("UNSUPPORTED: Tool 'ListTables' is not available for engine 'Postgres'. Ask the developer to add 'ISchemaCapability' support for this engine.");
     }
 
     [Fact]

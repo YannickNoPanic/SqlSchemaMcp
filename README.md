@@ -27,6 +27,31 @@ complexity analysis, pipeline health, and migration planning.
 The solution file (`SqlSchemaMcp.sln`) is at the repo root alongside the project, so `dotnet run`
 and `dotnet build` work from there without any `--project` flag.
 
+### Local .NET tool install
+
+For a more production-like local install, pack and install the tool from the repo:
+
+```bash
+dotnet pack SqlSchemaMcp.csproj -c Release
+dotnet tool install --global --add-source ./bin/Release SqlSchemaMcp
+```
+
+Then register the global command instead of `dotnet run`:
+
+```json
+{
+  "mcpServers": {
+    "sql-schema": {
+      "type": "stdio",
+      "command": "sql-schema-mcp"
+    }
+  }
+}
+```
+
+Use `dotnet tool update --global --add-source ./bin/Release SqlSchemaMcp` after rebuilding a
+new local package.
+
 ---
 
 ## HTTP Mode (powerusers)
@@ -167,7 +192,13 @@ capability and schema snapshot capability, which covers schema browsing and shar
 tools such as naming, missing foreign key, and missing index analysis. SQL Server-only,
 query, data sampling, diagnostics, security, and pipeline tools return `UNSUPPORTED:` for
 PostgreSQL/MariaDB until those engines implement the specific capability. If you need a
-missing capability, ask the maintainer to add support for that engine.
+missing capability, ask the developer to add support for that engine.
+
+Unsupported responses include the missing capability contract, for example:
+
+```
+UNSUPPORTED: Tool 'ExecuteQuery' is not available for engine 'Postgres'. Ask the developer to add 'IReadOnlyQueryCapability' support for this engine.
+```
 
 Startup read-only probing is SQL Server-specific. Object-form PostgreSQL or MariaDB entries
 are kept in the resolver and routed to their engine projects, but they are not passed to the
@@ -354,6 +385,16 @@ Row-level sampling and column statistics (read-only).
 | `ListDatabaseUsers` | List users and their assigned roles |
 | `ListObjectPermissions` | List explicit GRANT/DENY permissions on tables, views, and procs |
 
+### RuntimeTools
+
+Local readiness and capability discovery.
+
+| Tool | Description |
+|------|-------------|
+| `ListConfiguredDatabases` | List configured database keys with engine and capability groups |
+| `ListEngineCapabilities` | Show supported and unsupported capability groups for SQL Server, PostgreSQL, and MariaDB |
+| `CheckConfiguration` | Summarize runtime configuration readiness without reading schema data |
+
 ---
 
 ## Troubleshooting
@@ -367,6 +408,15 @@ stderr — stdout is reserved for MCP JSON-RPC.
 `ERROR: Unknown database 'x'. Available: poc, azure`
 The database name passed to a tool does not match any key in `SqlServer.Databases`. Check
 `appsettings.json` or the active env var overrides.
+
+**Unsupported capability**
+`UNSUPPORTED:` means the database is configured and routed correctly, but its engine does not
+implement the capability required by that tool yet. Run `ListEngineCapabilities` to see the
+current engine matrix, then ask the developer to add the named capability if it is needed.
+
+**Configuration self-test**
+Run `CheckConfiguration` from Claude after connecting the MCP server. It reports configured
+database keys, engine readiness notes, and whether no databases were loaded.
 
 **Port already in use (HTTP mode)**
 Change the port via `appsettings.json` (`Mcp:Port`) or env var `SQLMCP_Mcp__Port` and update the

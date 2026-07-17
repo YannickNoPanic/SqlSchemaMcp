@@ -59,7 +59,7 @@ public sealed class AnalysisQueries(
 
         return
             resolver.TryGetEngine(database, out var engine)
-                ? Sentinels.Unsupported(toolName, engine)
+                ? Sentinels.Unsupported(toolName, engine, nameof(ISchemaSnapshotCapability))
                 : Sentinels.UnknownDatabase(resolver.DatabaseNames, database);
     }
     public Task<string> AnalyzeDuplicateIndexes(
@@ -146,7 +146,7 @@ public sealed class AnalysisQueries(
 
         return Task.FromResult(
             resolver.TryGetEngine(database, out var engine)
-                ? Sentinels.Unsupported(toolName, engine)
+                ? Sentinels.Unsupported(toolName, engine, nameof(ISqlServerAnalysisCapability))
                 : Sentinels.UnknownDatabase(resolver.DatabaseNames, database));
     }
 }

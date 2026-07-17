@@ -17,8 +17,8 @@ public sealed class SentinelsTests
     [Fact]
     public void Unsupported_NamesToolAndEngineAndMaintainerAction()
     {
-        var result = Sentinels.Unsupported("AnalyzeWaitStats", DatabaseEngine.Postgres);
+        var result = Sentinels.Unsupported("AnalyzeWaitStats", DatabaseEngine.Postgres, "ISqlServerDiagnosticsCapability");
 
-        result.Should().Be("UNSUPPORTED: Tool 'AnalyzeWaitStats' is not available for engine 'Postgres'. Ask the maintainer to add support if you need this.");
+        result.Should().Be("UNSUPPORTED: Tool 'AnalyzeWaitStats' is not available for engine 'Postgres'. Ask the developer to add 'ISqlServerDiagnosticsCapability' support for this engine.");
     }
 }

@@ -85,7 +85,7 @@ public sealed class DataQueriesDispatcherTests
 
         var result = await sut.SampleTableData("poc", "dbo.Customers", 25, CancellationToken.None);
 
-        result.Should().Be("UNSUPPORTED: Tool 'SampleTableData' is not available for engine 'Postgres'. Ask the maintainer to add support if you need this.");
+        result.Should().Be("UNSUPPORTED: Tool 'SampleTableData' is not available for engine 'Postgres'. Ask the developer to add 'IDataSamplingCapability' support for this engine.");
     }
 
     private static DataQueries CreateSut(DatabaseEngine engine, object implementation)
