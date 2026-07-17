@@ -11,3 +11,8 @@ artifacts/
 planning/
 scripts/
 POC_Stored_Procedures_Overzicht.md
+.claude/settings.local.json
+.claude.local.md
+DocEri_V2_Tables.md
+sql-schema-mcp-audit.md
+refactoring_plan_orders.html
