@@ -1,0 +1,40 @@
+{
+  "schema": "aiworkflow.memory-manifest.v1",
+  "memoryIndex": "docs/workflow/memory-index.md",
+  "decisions": "docs/decisions",
+  "workflowRoot": "docs/workflow",
+  "activeFolders": [
+    "docs/workflow/plans/active",
+    "docs/workflow/specs/active",
+    "docs/workflow/tasks/active",
+    "docs/workflow/ideas/active",
+    "docs/workflow/learnings/active"
+  ],
+  "nonDefaultFolders": [
+    "docs/workflow/plans/completed",
+    "docs/workflow/plans/archived",
+    "docs/workflow/specs/completed",
+    "docs/workflow/specs/archived",
+    "docs/workflow/tasks/completed",
+    "docs/workflow/tasks/archived",
+    "docs/workflow/ideas/archived",
+    "docs/workflow/learnings/archived",
+    "docs/superpowers"
+  ],
+  "protectedFiles": [
+    "CLAUDE.md",
+    "AGENTS.md"
+  ],
+  "requiredMetadata": [
+    "id",
+    "type",
+    "scope",
+    "status",
+    "owner",
+    "created",
+    "last_reviewed",
+    "expires",
+    "token_value",
+    "summary"
+  ]
+}
