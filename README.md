@@ -151,6 +151,10 @@ Use one place per kind of setting:
 Configuration precedence is: appsettings defaults, then `.env`, then real process environment
 variables. Environment variables win over `.env`; `.env` wins over appsettings.
 
+Exception: `Security:VerifyLoginsAtStartup` and `Security:AllowWritableLogin` are
+`appsettings.json`-only by convention. Do not set `SQLMCP_Security__*` in `.env` or as a
+process environment variable — keep the startup read-only gate reviewable in a single file.
+
 The app loads the nearest `.env` from the current working directory or the application base
 directory and maps `SQLMCP_` variables into .NET configuration. For example,
 `SQLMCP_Mcp__Port=5101` becomes `Mcp:Port`.
@@ -219,13 +223,16 @@ They work in both stdio and HTTP mode.
 | `SQLMCP_SqlServer__Databases__<key>__ConnectionString` | Connection string for object-shaped entries |
 | `SQLMCP_Mcp__Port` | HTTP port (HTTP mode only) |
 | `SQLMCP_Mcp__BindAddress` | HTTP bind address (use `0.0.0.0` inside a container) |
-| `SQLMCP_Security__VerifyLoginsAtStartup` | Startup permission gate toggle |
-| `SQLMCP_Security__AllowWritableLogin` | Explicit writable-login escape hatch |
 | `SQLMCP_Audit__Enabled` | Audit log toggle |
 | `SQLMCP_Audit__Path` | Audit log path |
 
 The `__` separator maps to nested JSON keys. Add database names in `.env`, not in
-`docker-compose.yml`.
+`docker-compose.yml`. Security policy (`VerifyLoginsAtStartup`, `AllowWritableLogin`) is
+`appsettings.json`-only by convention — do not set `SQLMCP_Security__*` in `.env` or as a
+process environment variable, even though the generic `SQLMCP_` loader would technically accept
+it. Keeping it out of `.env` means the startup read-only gate always stays reviewable in a
+single, git-ignored-but-stable file instead of a value that could be silently overridden per
+deployment.
 Connection-string values must be raw connection strings. If startup reports
 `Keyword not supported: 'sqlmcp_azure_connection_string'`, the configured value contains an
 environment-variable assignment instead of just the SQL Server connection string.
